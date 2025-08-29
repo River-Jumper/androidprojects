@@ -1,0 +1,3 @@
+[submodule "androiddemo"]
+	path = androiddemo
+	url = https://github.com/River-Jumper/androiddemo.git
