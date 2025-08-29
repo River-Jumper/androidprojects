@@ -1,0 +1,4 @@
+<resources>
+    <string name="qrcode_app_name">QrCodeExample</string>
+    <string name="qrcode_permission_rejected_tip">无权限，无法启动应用</string>
+</resources>
