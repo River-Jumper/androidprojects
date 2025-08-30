@@ -63,9 +63,7 @@ class QrCodeAnalyzer {
 
     private fun getBitmap(width: Int, height: Int): Bitmap? {
         reusableBitmap = when {
-            reusableBitmap == null
-                    || reusableBitmap?.width != width
-                    || reusableBitmap?.height != height -> {
+            reusableBitmap == null || reusableBitmap?.width != width || reusableBitmap?.height != height -> {
                 Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             }
 
