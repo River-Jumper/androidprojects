@@ -27,13 +27,10 @@ class WebViewActivity : AppCompatActivity() {
         }
         webView.webViewClient = WebViewClient()
 
-        // 检查 URL 是否为空
         if (url.isNullOrEmpty()) {
             Toast.makeText(this, "无效的网址", Toast.LENGTH_LONG).show()
-            // 如果 URL 无效，直接返回，不执行下面的加载操作
             return
         }
-        // ✅ URL 有效，在这里加载网页
         webView.loadUrl(url)
     }
 }

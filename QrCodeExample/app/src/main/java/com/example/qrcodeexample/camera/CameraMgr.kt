@@ -78,10 +78,12 @@ class CameraMgr(
 
     // 监听analyzer的result回调
     // 这是第一级的回调，随后我们可以去实现一个二级回调
-    // 二级回调里，主窗口那边会打开一个新的web窗口
+    // 二级回调里，扫一扫窗口那边会打开一个新的web窗口
+    // 原本是想在这里销毁相机（这样做会带来一些异步问题，是非法的），扫一扫窗口那边打开网页
+    // 后面发现扫一扫窗口的销毁函数调用了相机的销毁函数，所以只需要保持现在的用pause做个伪销毁就行了
+    // 但是从层级上来说：扫一扫窗口-->Manager-->analyzer，所以二级回调还是合理的
     private inner class AnalyzerResultListener : QrCodeAnalyzer.ResultListener {
         override fun onResultGet(result: String?) {
-            // 关闭相机(可能不应该在这里执行，尝试在主进程中去执行)
             // destroyCamera()
             createNewWebListener?.createNewWeb(result)
         }
@@ -101,7 +103,7 @@ class CameraMgr(
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         // 注册监听器
         // 监听器的触发条件是：future拿到真正的对象
-        // 监听器在此之后被执行
+        // 监听器的函数体在此之后才被执行
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
             bindCameraUseCases()
@@ -143,8 +145,6 @@ class CameraMgr(
                 .build().also {
                     it.setAnalyzer(analyzerExecutor, cameraAnalyzer)
                 }
-
-
             // 这才是启动开关，从这开始，每帧的图片开始流向图像处理器
             bindCameraLifecycle(cameraSelector)
         }
