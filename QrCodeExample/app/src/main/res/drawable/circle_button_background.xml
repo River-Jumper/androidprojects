@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- 背景颜色，可根据需求修改 -->
+    <solid android:color="#FFFFFF"/>
+    <!-- 可选：添加边框 -->
+    <stroke
+        android:width="2dp"
+        android:color="#CCCCCC"/>
+    <!-- 可选：阴影效果需要用其他方式实现 -->
+</shape>

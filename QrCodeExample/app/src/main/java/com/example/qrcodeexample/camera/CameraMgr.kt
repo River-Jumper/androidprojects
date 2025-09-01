@@ -8,6 +8,7 @@ import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
@@ -140,6 +141,7 @@ class CameraMgr(
                 )
             ).build()
 
+            // 预览流
             if (CameraUseCase.PREVIEW in useCases) {
                 preview = previewBuild
                     .setResolutionSelector(resolutionSelector)
@@ -147,14 +149,13 @@ class CameraMgr(
                     .build()
                 userCaseGroupBuilder.addUseCase(preview?: return@doOnAttach)
             }
-
+            // 拍照流
             if (CameraUseCase.IMAGE_CAPTURE in useCases) {
                 imageCapture = ImageCapture.Builder().build()
                 userCaseGroupBuilder.addUseCase(imageCapture?:return@doOnAttach)
             }
-
+            // 分析流
             if (CameraUseCase.IMAGE_ANALYSIS in useCases) {
-                // 图像处理
                 imageAnalysis = ImageAnalysis.Builder()
                     .setResolutionSelector(resolutionSelector)
                     .setTargetRotation(rotation)
@@ -192,29 +193,51 @@ class CameraMgr(
         }
     }
 
+    fun takePhoto(onResult: (Boolean, String?) -> Unit) {
+        val imageCapture = imageCapture ?: run {
+            onResult(false, "ImageCapture not initialized")
+            return
+        }
+
+        // 照片文件名
+        val name = "photo_${System.currentTimeMillis()}.jpg"
+
+        // 用 MediaStore 保存到系统相册
+        val contentValues = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH,
+                android.os.Environment.DIRECTORY_PICTURES + "/MyApp") // 存到相册/MyApp
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            context.contentResolver,
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    onResult(false, exc.message)
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = output.savedUri.toString()
+                    Log.d(TAG, "Photo capture succeeded: $savedUri")
+                    onResult(true, savedUri)
+                }
+            }
+        )
+    }
+
+
     fun destroyCamera() {
         cameraProvider?.unbindAll()
         captureExecutor.shutdown()
         analyzerExecutor.shutdown()
     }
-    /*fun destroyCamera() {
-        // 1. 先解绑所有用例
-        cameraProvider?.unbindAll()
-
-        // 2. 关闭线程池
-        // 这会阻止新的任务被提交，并等待已提交的任务完成
-        analyzerExecutor.shutdown()
-
-        // 3. （可选）等待一段时间，确保所有任务都已完成
-        try {
-            if (!analyzerExecutor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                Log.w(TAG, "Analyzer executor did not terminate in time.")
-                // 可以在这里强制关闭线程池，但通常不推荐
-                // analyzerExecutor.shutdownNow()
-            }
-        } catch (e: InterruptedException) {
-            analyzerExecutor.shutdownNow()
-            Thread.currentThread().interrupt()
-        }
-    }*/
 }

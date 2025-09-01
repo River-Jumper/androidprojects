@@ -54,7 +54,9 @@ class QrCodeScannerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.scan_layout)
-        mCameraMgr = CameraMgr(this, this.findViewById(R.id.view_finder), setOf(CameraUseCase.PREVIEW, CameraUseCase.IMAGE_ANALYSIS)).apply {
+        mCameraMgr = CameraMgr(this
+            , this.findViewById(R.id.view_finder)
+            , setOf(CameraUseCase.PREVIEW, CameraUseCase.IMAGE_ANALYSIS)).apply {
             createNewWebListener = CameraMgrCreateNewWebListener()
         }
 
