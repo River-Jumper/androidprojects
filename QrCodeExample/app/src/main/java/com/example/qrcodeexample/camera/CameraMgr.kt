@@ -7,6 +7,7 @@ import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
@@ -30,9 +31,16 @@ import kotlin.math.min
  * 3、点击按钮响应拍照，并将拍照结果存储到应用文件（需要申请文件权限）
  * 4、拉起新页面，在 AppcompatImageView 展示存储到文件的图片
  */
+
+enum class CameraUseCase {
+    PREVIEW,
+    IMAGE_CAPTURE,
+    IMAGE_ANALYSIS
+}
 class CameraMgr(
     private val context: Context,
-    private val viewFinder: PreviewView
+    private val viewFinder: PreviewView,
+    private val useCases: Set<CameraUseCase>
 ) {
     companion object {
         const val TAG: String = "CameraMgr"
@@ -42,7 +50,8 @@ class CameraMgr(
 
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
-
+    private var imageCapture: ImageCapture? = null
+    private val userCaseGroupBuilder = UseCaseGroup.Builder()
     private var imageAnalysis: ImageAnalysis? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -131,20 +140,32 @@ class CameraMgr(
                 )
             ).build()
 
-            preview = previewBuild
-                .setResolutionSelector(resolutionSelector)
-                .setTargetRotation(rotation)
-                .build()
+            if (CameraUseCase.PREVIEW in useCases) {
+                preview = previewBuild
+                    .setResolutionSelector(resolutionSelector)
+                    .setTargetRotation(rotation)
+                    .build()
+                userCaseGroupBuilder.addUseCase(preview?: return@doOnAttach)
+            }
 
-            // 图像处理
-            imageAnalysis = ImageAnalysis.Builder()
-                .setResolutionSelector(resolutionSelector)
-                .setTargetRotation(rotation)
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build().also {
-                    it.setAnalyzer(analyzerExecutor, cameraAnalyzer)
-                }
+            if (CameraUseCase.IMAGE_CAPTURE in useCases) {
+                imageCapture = ImageCapture.Builder().build()
+                userCaseGroupBuilder.addUseCase(imageCapture?:return@doOnAttach)
+            }
+
+            if (CameraUseCase.IMAGE_ANALYSIS in useCases) {
+                // 图像处理
+                imageAnalysis = ImageAnalysis.Builder()
+                    .setResolutionSelector(resolutionSelector)
+                    .setTargetRotation(rotation)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build().also {
+                        it.setAnalyzer(analyzerExecutor, cameraAnalyzer)
+                    }
+                userCaseGroupBuilder.addUseCase(imageAnalysis?:return@doOnAttach)
+            }
+
             // 这才是启动开关，从这开始，每帧的图片开始流向图像处理器
             bindCameraLifecycle(cameraSelector)
         }
@@ -153,9 +174,9 @@ class CameraMgr(
     private fun bindCameraLifecycle(cameraSelector: CameraSelector) {
         try {
             val viewport = viewFinder.viewPort
-            val userCaseGroupBuilder = UseCaseGroup.Builder()
+            /*userCaseGroupBuilder
                 .addUseCase(preview ?: return)
-                .addUseCase(imageAnalysis ?: return)
+                .addUseCase(imageAnalysis ?: return)*/
             viewport?.run {
                 userCaseGroupBuilder.setViewPort(viewport)
             }

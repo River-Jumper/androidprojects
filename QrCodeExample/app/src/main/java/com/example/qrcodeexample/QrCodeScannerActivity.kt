@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.qrcodeexample.camera.CameraMgr
+import com.example.qrcodeexample.camera.CameraUseCase
 
 /**
  * day1
@@ -53,7 +54,7 @@ class QrCodeScannerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.scan_layout)
-        mCameraMgr = CameraMgr(this, this.findViewById(R.id.view_finder)).apply {
+        mCameraMgr = CameraMgr(this, this.findViewById(R.id.view_finder), setOf(CameraUseCase.PREVIEW, CameraUseCase.IMAGE_ANALYSIS)).apply {
             createNewWebListener = CameraMgrCreateNewWebListener()
         }
 
