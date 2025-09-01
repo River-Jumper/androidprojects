@@ -32,6 +32,9 @@ class QRCodeView @JvmOverloads constructor(
         const val ANIMATION_DELAY = 12L
     }
 
+    // 在这里用到了qr_code_layout
+    // 去掉下划线，再转为驼峰，在加上Binding
+    // kotlin，很神奇吧
     private val binding: QrCodeLayoutBinding by lazy {
         QrCodeLayoutBinding.inflate(LayoutInflater.from(context))
     }
