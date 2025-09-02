@@ -14,11 +14,14 @@ import com.example.qrcodeexample.QrCodeScannerActivity.Companion.CAMERA_PERMISSI
 import com.example.qrcodeexample.QrCodeScannerActivity.Companion.CAMERA_PERMISSION_REQUEST_CODE
 import com.example.qrcodeexample.camera.CameraMgr
 import com.example.qrcodeexample.camera.CameraUseCase
+import com.example.qrcodeexample.camera.PermissionManager
 
 class PhotoCaptureActivity : ComponentActivity() {
 
     private lateinit var viewFinder: PreviewView
     private lateinit var captureButton: ImageButton
+
+    private lateinit var permissionManager: PermissionManager
 
     private var mCameraMgr: CameraMgr? = null
 
@@ -26,9 +29,18 @@ class PhotoCaptureActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.photo_layout)
 
+        permissionManager = PermissionManager(this)
         initView()
 
-        checkCameraPermission()
+        permissionManager.request(QrCodeScannerActivity.CAMERA_PERMISSION) { granted ->
+            if (granted) {
+                startCamera()
+            } else {
+                Toast.makeText(this, R.string.qrcode_permission_rejected_tip, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // checkCameraPermission()
     }
 
     private fun initView() {
@@ -54,7 +66,7 @@ class PhotoCaptureActivity : ComponentActivity() {
         }
     }
 
-    private fun checkCameraPermission() {
+    /*private fun checkCameraPermission() {
         when {
             // 权限已授予
             ContextCompat.checkSelfPermission(
@@ -73,9 +85,9 @@ class PhotoCaptureActivity : ComponentActivity() {
                 )
             }
         }
-    }
+    }*/
 
-    @Deprecated("Deprecated in Java")
+    /*@Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -91,7 +103,7 @@ class PhotoCaptureActivity : ComponentActivity() {
                     .show()
             }
         }
-    }
+    }*/
 
     private fun startCamera() {
         try {

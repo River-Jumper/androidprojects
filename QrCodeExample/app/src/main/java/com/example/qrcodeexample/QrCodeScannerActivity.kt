@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.qrcodeexample.camera.CameraMgr
 import com.example.qrcodeexample.camera.CameraUseCase
+import com.example.qrcodeexample.camera.PermissionManager
 
 /**
  * day1
@@ -40,6 +41,8 @@ class QrCodeScannerActivity : ComponentActivity() {
 
     private var mCameraMgr: CameraMgr? = null
 
+    private lateinit var permissionManager: PermissionManager
+
     private inner class CameraMgrCreateNewWebListener : CameraMgr.CreateNewWebListener {
         override fun createNewWeb(url: String?) {
             // mCameraMgr?.destroyCamera()
@@ -58,6 +61,17 @@ class QrCodeScannerActivity : ComponentActivity() {
             , this.findViewById(R.id.view_finder)
             , setOf(CameraUseCase.PREVIEW, CameraUseCase.IMAGE_ANALYSIS)).apply {
             createNewWebListener = CameraMgrCreateNewWebListener()
+        }
+        permissionManager = PermissionManager(this)
+
+        permissionManager.request(QrCodeScannerActivity.CAMERA_PERMISSION) {
+            isGranted ->
+            if (isGranted) {
+                startCamera()
+            }
+            else {
+                Toast.makeText(this, R.string.qrcode_permission_rejected_tip, Toast.LENGTH_LONG).show()
+            }
         }
 
         checkCameraPermission()
@@ -85,6 +99,7 @@ class QrCodeScannerActivity : ComponentActivity() {
     }
 
     // 权限申请结果回调
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
