@@ -37,13 +37,19 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <activity
-            android:name=".PhotoCaptureActivity"
+            android:name=".photo.camera.PhotoCaptureActivity"
             android:exported="false"
             android:theme="@style/Theme.QrCodeExample">
         </activity>
 
         <activity
-            android:name=".PhotoPreviewActivity"
+            android:name=".photo.camera.PhotoPreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QrCodeExample">
+        </activity>
+
+        <activity
+            android:name=".photo.album.ui.PhotoAlbumActivity"
             android:exported="false"
             android:theme="@style/Theme.QrCodeExample">
         </activity>
