@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import java.util.Calendar
+import java.util.TimeZone
 
 class ClockView @JvmOverloads constructor(
     context: Context,
@@ -25,9 +26,6 @@ class ClockView @JvmOverloads constructor(
     private var hourHandLength = 100f
     private var minuteHandLength = 140f
     private var secondHandLength = 180f
-    private var secondHandAngle: Float = 0f
-    private var minuteHandAngle: Float = 0f
-    private var hourHandAngle: Float = 0f
 
     // 初始化画笔，只执行一次
     private val hourHandPaint = Paint().apply {
@@ -37,16 +35,23 @@ class ClockView @JvmOverloads constructor(
         style = Paint.Style.STROKE // 绘制线条
     }
     private val minuteHandPaint = Paint().apply {
-        color = Color.BLUE // 线的颜色
-        strokeWidth = 10f // 线的粗细
-        isAntiAlias = true // 抗锯齿
-        style = Paint.Style.STROKE // 绘制线条
+        color = Color.BLUE
+        strokeWidth = 10f
+        isAntiAlias = true
+        style = Paint.Style.STROKE
     }
     private val secondHandPaint = Paint().apply {
-        color = Color.RED // 线的颜色
-        strokeWidth = 5f // 线的粗细
-        isAntiAlias = true // 抗锯齿
-        style = Paint.Style.STROKE // 绘制线条
+        color = Color.RED
+        strokeWidth = 5f
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+    }
+
+    val textPaint = Paint().apply {
+        color = Color.BLACK
+        textSize = 60f
+        isAntiAlias = true
+        textAlign = Paint.Align.CENTER   // 横向居中
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -57,9 +62,9 @@ class ClockView @JvmOverloads constructor(
         radius = minOf(w, h) / 2f * 0.9f // 预留边距
 
         // 根据半径设置指针长度
-        hourHandLength = radius * 0.5f
-        minuteHandLength = radius * 0.7f
-        secondHandLength = radius * 0.9f
+        hourHandLength = radius * 0.45f
+        minuteHandLength = radius * 0.6f
+        secondHandLength = radius * 0.8f
     }
 
     // 绘制圆形的画笔
@@ -82,14 +87,13 @@ class ClockView @JvmOverloads constructor(
         canvas.restore()
     }
 
-    // 控制转动角度的变量
-    private var currentAngle: Float = 0f
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         canvas.drawCircle(centerX, centerY, radius, circlePaint)
 
-        val calendar = Calendar.getInstance()
+        val timeZone = TimeZone.getTimeZone("Asia/Shanghai")
+        val calendar = Calendar.getInstance(timeZone)
         val hour = calendar.get(Calendar.HOUR_OF_DAY) // 0~23
         val minute = calendar.get(Calendar.MINUTE)
         val second = calendar.get(Calendar.SECOND)
@@ -97,15 +101,25 @@ class ClockView @JvmOverloads constructor(
 
         val secondAngle = (second + milli / 1000f) * 6f             // 每秒6°
         val minuteAngle = (minute + (second + milli / 1000f) / 60f) * 6f  // 每分6°
-        val hourAngle = (hour + (minute + (second + milli / 1000f) / 60f) / 12f) * 30f // 每小时30°
-
-        /*drawRotatedLine(canvas, hourHandAngle, hourHandLength, hourHandPaint)
-        drawRotatedLine(canvas, minuteHandAngle, minuteHandLength, minuteHandPaint)
-        drawRotatedLine(canvas, secondHandAngle, secondHandLength, secondHandPaint)*/
+        val hourAngle = (hour + (minute + (second + milli / 1000f) / 60f) / 60f) * 30f // 每小时30°
 
         drawRotatedLine(canvas, hourAngle, hourHandLength, hourHandPaint)
         drawRotatedLine(canvas, minuteAngle, minuteHandLength, minuteHandPaint)
         drawRotatedLine(canvas, secondAngle, secondHandLength, secondHandPaint)
+
+        val fm = textPaint.fontMetrics
+
+        for (i in 1..12) {
+            val angle = Math.toRadians((i * 30 - 90).toDouble()) // -90° 保证12点朝上
+            val x = (centerX + (radius - 40) * Math.cos(angle)).toFloat()
+            val y = (centerY + (radius - 40) * Math.sin(angle)).toFloat()
+
+            // baseline 修正（保证文字垂直居中）
+            val baseline = y - (fm.ascent + fm.descent) / 2
+
+            canvas.drawText(i.toString(), x, baseline, textPaint)
+        }
+
 
         postInvalidateDelayed(ANIMATION_DELAY)
 
