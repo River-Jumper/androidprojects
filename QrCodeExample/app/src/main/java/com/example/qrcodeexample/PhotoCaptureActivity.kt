@@ -1,20 +1,15 @@
 package com.example.qrcodeexample
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.example.qrcodeexample.QrCodeScannerActivity.Companion.CAMERA_PERMISSION
-import com.example.qrcodeexample.QrCodeScannerActivity.Companion.CAMERA_PERMISSION_REQUEST_CODE
-import com.example.qrcodeexample.camera.CameraMgr
-import com.example.qrcodeexample.camera.CameraUseCase
-import com.example.qrcodeexample.camera.PermissionManager
+import com.example.qrcodeexample.manager.CameraMgr
+import com.example.qrcodeexample.manager.CameraUseCase
+import com.example.qrcodeexample.manager.PermissionManager
 
 class PhotoCaptureActivity : ComponentActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.qrcodeexample.camera
+package com.example.qrcodeexample.manager
 
 import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity

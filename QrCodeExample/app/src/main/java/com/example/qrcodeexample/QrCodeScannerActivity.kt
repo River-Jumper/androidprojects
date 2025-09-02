@@ -8,9 +8,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.qrcodeexample.camera.CameraMgr
-import com.example.qrcodeexample.camera.CameraUseCase
-import com.example.qrcodeexample.camera.PermissionManager
+import com.example.qrcodeexample.manager.CameraMgr
+import com.example.qrcodeexample.manager.CameraUseCase
+import com.example.qrcodeexample.manager.PermissionManager
 
 /**
  * day1

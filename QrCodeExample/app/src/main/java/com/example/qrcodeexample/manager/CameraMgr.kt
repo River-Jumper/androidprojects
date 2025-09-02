@@ -1,4 +1,4 @@
-package com.example.qrcodeexample.camera
+package com.example.qrcodeexample.manager
 
 import android.content.Context
 import android.util.Log
@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import com.example.qrcodeexample.qrcode.analyze.QrCodeAnalyzer
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
