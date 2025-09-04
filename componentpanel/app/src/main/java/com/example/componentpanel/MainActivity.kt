@@ -1,21 +1,23 @@
 package com.example.componentpanel
 
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import androidx.core.view.isVisible
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
+    
+    companion object {
+        private const val EXPANDED_OFFSET_RATIO = 0.1f
+        private const val ALPHA_CALCULATION_DIVISOR = 2f
+    }
+    
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    private lateinit var bottomSheetTopArea: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +25,9 @@ class MainActivity : AppCompatActivity() {
         initView()
     }
 
-    fun initView() {
+    private fun initView() {
         val bottomSheet: View = findViewById(R.id.bottomSheet)
-        val bottomSheetTopArea = findViewById<View>(R.id.bottom_sheet_top_area)
+        bottomSheetTopArea = findViewById(R.id.bottom_sheet_top_area)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.isHideable = true
         bottomSheetBehavior.isFitToContents = false
@@ -33,41 +35,47 @@ class MainActivity : AppCompatActivity() {
 
         bottomSheet.post {
             val parentHeight = (bottomSheet.parent as View).height
-            bottomSheetBehavior.expandedOffset = (parentHeight * 0.1).toInt()
+            bottomSheetBehavior.expandedOffset = (parentHeight * EXPANDED_OFFSET_RATIO).toInt()
         }
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    bottomSheetTopArea.visibility = View.GONE
-                }
-                else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    bottomSheetTopArea.visibility = View.VISIBLE
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        bottomSheetTopArea.visibility = View.GONE
+                    }
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        bottomSheetTopArea.visibility = View.VISIBLE
+                    }
                 }
             }
-
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                val alpha = sqrt((slideOffset + 1) / 2)
+                // 改变透明度：使用平方根函数创建平滑的透明度过渡效果
+                val alpha = sqrt((slideOffset + 1) / ALPHA_CALCULATION_DIVISOR)
                 bottomSheetTopArea.alpha = alpha
             }
 
         })
 
-        // 打开
         findViewById<Button>(R.id.show).setOnClickListener {
             if (bottomSheetTopArea.isGone) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                bottomSheetTopArea.visibility = View.VISIBLE
-            }
-            else if (bottomSheetTopArea.isVisible) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                bottomSheetTopArea.visibility = View.GONE
+                showBottomSheet()
+            } else if (bottomSheetTopArea.isVisible) {
+                hideBottomSheet()
             }
         }
-        // 点击上方区域关闭
+
         bottomSheetTopArea.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            bottomSheetTopArea.visibility = View.GONE
+            hideBottomSheet()
         }
+    }
+
+    private fun showBottomSheet() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetTopArea.visibility = View.VISIBLE
+    }
+    private fun hideBottomSheet() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetTopArea.visibility = View.GONE
     }
 }
