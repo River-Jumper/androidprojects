@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import androidx.core.view.isVisible
 import androidx.core.view.isGone
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
@@ -35,6 +36,23 @@ class MainActivity : AppCompatActivity() {
             bottomSheetBehavior.expandedOffset = (parentHeight * 0.1).toInt()
         }
 
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    bottomSheetTopArea.visibility = View.GONE
+                }
+                else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetTopArea.visibility = View.VISIBLE
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val alpha = sqrt((slideOffset + 1) / 2)
+                bottomSheetTopArea.alpha = alpha
+            }
+
+        })
+
         // 打开
         findViewById<Button>(R.id.show).setOnClickListener {
             if (bottomSheetTopArea.isGone) {
@@ -45,11 +63,6 @@ class MainActivity : AppCompatActivity() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 bottomSheetTopArea.visibility = View.GONE
             }
-        }
-        // 按钮关闭
-        findViewById<Button>(R.id.closeButton).setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            bottomSheetTopArea.visibility = View.GONE
         }
         // 点击上方区域关闭
         bottomSheetTopArea.setOnClickListener {

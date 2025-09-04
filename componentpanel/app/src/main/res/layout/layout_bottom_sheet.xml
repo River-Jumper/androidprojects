@@ -9,13 +9,4 @@
     android:background="@android:color/white"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="10dp" />
-    
-    <Button
-        android:id="@+id/closeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="close"/>
 </LinearLayout>
