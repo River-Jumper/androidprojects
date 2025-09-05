@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    
+    <!--一个小小的伪造置灰的区域-->
     <View
         android:id="@+id/bottom_sheet_top_area"
         android:layout_width="match_parent"

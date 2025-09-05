@@ -3,9 +3,12 @@ package com.example.componentpanel
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.example.componentpanel.ui.BottomSheetTitleView
+import com.example.componentpanel.viewmodel.BottomSheetTitleViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.sqrt
 
@@ -18,11 +21,36 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var bottomSheetTopArea: View
+    private lateinit var bottomSheetTitleView: BottomSheetTitleView
+    private lateinit var bottomSheetTitleViewModel: BottomSheetTitleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
+        initTitleViewModel()
+    }
+
+    private fun initTitleViewModel() {
+        bottomSheetTitleView = findViewById(R.id.view_bottomSheet_title)
+        bottomSheetTitleViewModel = BottomSheetTitleViewModel()
+
+        bottomSheetTitleView.onStarViewClickedListener = {
+            bottomSheetTitleViewModel.toggleStarState()
+        }
+
+        bottomSheetTitleViewModel.starState.observe(this) { starState ->
+            if (starState) {
+                bottomSheetTitleView.setStartView(R.drawable.ic_star_yellow)
+            }
+            else {
+                bottomSheetTitleView.setStartView(R.drawable.ic_star_grey)
+            }
+        }
+
+        bottomSheetTitleViewModel.toastMessage.observe(this) { toastMessage ->
+            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initView() {

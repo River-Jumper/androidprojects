@@ -17,7 +17,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp" />
 
-    <!-- 你的 BottomSheet 容器 -->
     <include layout="@layout/bottom_sheet_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
