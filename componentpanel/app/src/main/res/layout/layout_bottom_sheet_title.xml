@@ -9,7 +9,7 @@
     <!--尝试能不能把四角变得圆润一些-->
     <ImageView
         android:id="@+id/imageView_bottomSheet_title_icon"
-        android:layout_width="45dp"
+        android:layout_width="40dp"
         android:layout_height="40dp"
         android:contentDescription="对应组件的图标"
         android:scaleType="fitCenter"
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:src="@drawable/ic_temp"/>
+        tools:src="@drawable/ic_title"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

@@ -35,16 +35,16 @@ class MainActivity : AppCompatActivity() {
         bottomSheetTitleView = findViewById(R.id.view_bottomSheet_title)
         bottomSheetTitleViewModel = BottomSheetTitleViewModel()
 
-        bottomSheetTitleView.onStarViewClickedListener = {
+        bottomSheetTitleView.setImageClickListener(BottomSheetTitleView.STAR) {
             bottomSheetTitleViewModel.toggleStarState()
         }
 
         bottomSheetTitleViewModel.starState.observe(this) { starState ->
             if (starState) {
-                bottomSheetTitleView.setStartView(R.drawable.ic_star_yellow)
+                bottomSheetTitleView.setImage(BottomSheetTitleView.STAR, R.drawable.ic_star_yellow)
             }
             else {
-                bottomSheetTitleView.setStartView(R.drawable.ic_star_grey)
+                bottomSheetTitleView.setImage(BottomSheetTitleView.STAR, R.drawable.ic_star_grey)
             }
         }
 

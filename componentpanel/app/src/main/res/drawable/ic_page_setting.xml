@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 整体主色（中灰），可按需替换 -->
+    <!-- 文档主体（填充） -->
+    <path
+        android:fillColor="#616161"
+        android:pathData="M6,2 H13 L18,7 V20 a1,1 0 0 1 -1,1 H6 a1,1 0 0 1 -1,-1 V3 a1,1 0 0 1 1,-1 z" />
+
+    <!-- 折角（稍浅，制造纸张折角效果） -->
+    <path
+        android:fillColor="#9E9E9E"
+        android:pathData="M13,2 V7 H18"
+        android:fillAlpha="0.95" />
+
+    <!-- 文档内的两条简短水平线，表示文本行 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M8,10 H14 V11 H8 Z M8,13 H14 V14 H8 Z" />
+
+    <!-- 右下角齿轮（用描边表现，简化的齿轮——中心圆 + 三个辐条） -->
+    <!-- 齿轮圆环 -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#424242"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M22,17 a3,3 0 1,1 -6,0 a3,3 0 1,1 6,0" />
+
+    <!-- 齿轮辐条 / 关节（3 条辐条，简洁表现） -->
+    <path
+        android:strokeColor="#424242"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:pathData="M19,15 L19,13" />
+    <path
+        android:strokeColor="#424242"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:pathData="M20.9,15.1 L22.3,13.7" />
+    <path
+        android:strokeColor="#424242"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:pathData="M17.1,15.1 L15.7,13.7" />
+
+</vector>
