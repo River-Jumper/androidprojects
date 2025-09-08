@@ -22,7 +22,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:gravity="center"
-            tools:src="@drawable/ic_reload" />
+            tools:src="@drawable/ic_save_as" />
 
         <TextView
             android:id="@+id/textView_bottomSheet_square_text"

@@ -1,4 +1,4 @@
-package com.example.componentpanel.ui
+package com.example.componentpanel.ui.view
 
 import android.content.Context
 import android.util.AttributeSet

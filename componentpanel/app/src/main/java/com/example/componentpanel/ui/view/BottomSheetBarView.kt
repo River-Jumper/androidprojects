@@ -1,4 +1,4 @@
-package com.example.componentpanel.ui
+package com.example.componentpanel.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -12,6 +12,7 @@ class BottomSheetBarView @JvmOverloads constructor(
         const val START_ICON = "startIcon"
         const val END_ICON = "endIcon"
         const val TEXT = "text"
+        const val SUB_TEXT = "subText"
     }
     override fun inflateLayout() {
         LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_bar, this, true)
@@ -21,6 +22,7 @@ class BottomSheetBarView @JvmOverloads constructor(
         imageViews[START_ICON] = findViewById(R.id.imageView_bottomSheet_bar_start_icon)
         imageViews[END_ICON] = findViewById(R.id.imageView_bottomSheet_bar_end_icon)
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_bar_text)
+        textViews[SUB_TEXT] = findViewById(R.id.textView_bottomSheet_bar_subText)
     }
 
     init {

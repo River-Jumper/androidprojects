@@ -36,7 +36,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -46,5 +45,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    /*卡片视图添加的依赖（非必要）*/
     implementation("androidx.cardview:cardview:1.0.0")
+    /*为了读取url添加的依赖*/
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

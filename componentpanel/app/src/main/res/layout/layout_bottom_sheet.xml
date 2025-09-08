@@ -9,9 +9,11 @@
     android:background="@android:color/white"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <com.example.componentpanel.ui.BottomSheetTitleView
+    <com.example.componentpanel.ui.view.BottomSheetTitleView
         android:id="@+id/view_bottomSheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <include layout="@layout/layout_bottom_sheet_grid" />
 
 </LinearLayout>
