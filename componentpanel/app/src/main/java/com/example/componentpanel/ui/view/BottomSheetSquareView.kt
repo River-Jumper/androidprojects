@@ -22,9 +22,9 @@ class BottomSheetSquareView @JvmOverloads constructor(
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_square_text)
     }
     
-    init {
+    /*init {
         // 默认（只是效果演示）
         setImage(ICON, R.drawable.ic_save_as)
         setText(TEXT, "另存")
-    }
+    }*/
 }

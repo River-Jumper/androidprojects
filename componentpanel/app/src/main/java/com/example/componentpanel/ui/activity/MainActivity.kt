@@ -38,20 +38,31 @@ class MainActivity : AppCompatActivity() {
         initGridRecyclerView()
     }
 
-    // 功能调试用途
+    // 调试用途
     private fun initGridRecyclerView() {
         gridRecyclerView = findViewById(R.id.recyclerView_grid)
         gridRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         val dataList = mutableListOf(
-            GridData("reload", R.drawable.ic_save_as, "另存"),
-            GridData("share", R.drawable.ic_share, "分享"),
-            GridData("print", R.drawable.ic_print, "打印"),
-            GridData("paperTools", R.drawable.ic_paper_tools, "论文工具"),
-            GridData("find", R.drawable.ic_find, "查找"),
+            GridData(R.drawable.ic_save_as, "另存"),
+            GridData(R.drawable.ic_share, "分享"),
+            GridData(R.drawable.ic_print, "打印"),
+            GridData(R.drawable.ic_paper_tools, "论文工具"),
+            GridData(R.drawable.ic_find, "查找"),
+            GridData(null, "乐子1"),
+            GridData(null, "乐子2"),
+            GridData(null, "乐子3"),
         )
         val adapter = GridAdapter(dataList)
+        adapter.getItem(5)?.onTextClickListener = {
+            adapter.addItem(
+                newItem =  GridData(R.drawable.ic_star_yellow
+                    , "新增"),
+            )
+        }
+
+
         gridRecyclerView.adapter = adapter
     }
 
