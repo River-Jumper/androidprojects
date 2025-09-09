@@ -25,11 +25,13 @@ class BottomSheetBarView @JvmOverloads constructor(
         textViews[SUB_TEXT] = findViewById(R.id.textView_bottomSheet_bar_subText)
     }
 
-    init {
-        // 默认（只是个效果演示）
+    /*init {
+        // 默认（只是个效果演示）TODO 删掉
         setImage(START_ICON, R.drawable.ic_page_setting)
         setText(TEXT, "页面设置")
-    }
+        setText(SUB_TEXT, "你猜猜")
+        setImage(END_ICON, R.drawable.ic_drop_down)
+    }*/
 }
 
 /*
