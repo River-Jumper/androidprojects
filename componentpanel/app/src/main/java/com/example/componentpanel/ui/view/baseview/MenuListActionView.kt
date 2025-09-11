@@ -1,13 +1,13 @@
-package com.example.componentpanel.ui.view
+package com.example.componentpanel.ui.view.baseview
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.example.componentpanel.R
 
-class BottomSheetBarView @JvmOverloads constructor(
+class MenuListActionView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : BaseBottomSheetView(context, attrs) {
+) : AbstractBaseView(context, attrs) {
     companion object {
         const val START_ICON = "startIcon"
         const val END_ICON = "endIcon"
@@ -15,7 +15,7 @@ class BottomSheetBarView @JvmOverloads constructor(
         const val SUB_TEXT = "subText"
     }
     override fun inflateLayout() {
-        LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_bar, this, true)
+        LayoutInflater.from(context).inflate(R.layout.item_menu_list_action, this, true)
     }
 
     override fun collectViews() {
@@ -24,14 +24,6 @@ class BottomSheetBarView @JvmOverloads constructor(
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_bar_text)
         textViews[SUB_TEXT] = findViewById(R.id.textView_bottomSheet_bar_subText)
     }
-
-    /*init {
-        // 默认（只是个效果演示）TODO 删掉
-        setImage(START_ICON, R.drawable.ic_page_setting)
-        setText(TEXT, "页面设置")
-        setText(SUB_TEXT, "你猜猜")
-        setImage(END_ICON, R.drawable.ic_drop_down)
-    }*/
 }
 
 /*

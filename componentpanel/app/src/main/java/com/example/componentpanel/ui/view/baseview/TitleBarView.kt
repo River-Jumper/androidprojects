@@ -1,13 +1,13 @@
-package com.example.componentpanel.ui.view
+package com.example.componentpanel.ui.view.baseview
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import com.example.componentpanel.R
 
-class BottomSheetTitleView @JvmOverloads constructor(
+class TitleBarView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : BaseBottomSheetView(context, attrs) {
+) : AbstractBaseView(context, attrs) {
     companion object {
         const val ICON = "icon"
         const val MAIN_TITLE = "mainTitle"
@@ -16,7 +16,7 @@ class BottomSheetTitleView @JvmOverloads constructor(
     }
     
     override fun inflateLayout() {
-        LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_title, this, true)
+        LayoutInflater.from(context).inflate(R.layout.title_bar, this, true)
     }
     
     override fun collectViews() {
@@ -24,14 +24,6 @@ class BottomSheetTitleView @JvmOverloads constructor(
         imageViews[STAR] = findViewById(R.id.imageView_bottomSheet_title_star)
         textViews[MAIN_TITLE] = findViewById(R.id.textView_bottomSheet_title_mainTitle)
         textViews[SUB_TITLE] = findViewById(R.id.textView_bottomSheet_title_subTitle)
-    }
-    
-    init {
-        // 默认（只是效果演示）
-        setImage(ICON, R.drawable.ic_title)
-        setImage(STAR, R.drawable.ic_star_grey)
-        setText(MAIN_TITLE, "新笔记")
-        setText(SUB_TITLE, "字数：0")
     }
 }
 

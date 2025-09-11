@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class BottomSheetTitleViewModel : ViewModel() {
+class TitleBarViewModel : ViewModel() {
     private val _starState = MutableLiveData(false)
     val starState: LiveData<Boolean> = _starState
 
