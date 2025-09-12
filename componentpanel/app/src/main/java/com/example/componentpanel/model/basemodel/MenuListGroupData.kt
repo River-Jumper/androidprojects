@@ -1,4 +1,4 @@
-package com.example.componentpanel.model
+package com.example.componentpanel.model.basemodel
 
 data class MenuListGroupData(
     // val id: String,

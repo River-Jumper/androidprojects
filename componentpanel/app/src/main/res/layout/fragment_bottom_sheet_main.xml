@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.example.componentpanel.ui.view.baseview.TitleBarView
+    <com.example.componentpanel.ui.view.baseview.TitleView
         android:id="@+id/view_bottomSheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
         <!--这里是按照scrollView + linearLayout设计的-->
-        <com.example.componentpanel.ui.view.compositview.ToolBarView
+        <com.example.componentpanel.ui.view.compositview.ToolGroupView
             android:id="@+id/item_tool_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -72,3 +72,4 @@ abstract class AbstractBaseView @JvmOverloads constructor(
         viewClickListener = listener
     }
 }
+

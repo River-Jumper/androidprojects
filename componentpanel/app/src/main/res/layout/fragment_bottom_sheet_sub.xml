@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.example.componentpanel.ui.view.baseview.TitleBarView
+    <com.example.componentpanel.ui.view.baseview.TitleView
         android:id="@+id/view_bottomSheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

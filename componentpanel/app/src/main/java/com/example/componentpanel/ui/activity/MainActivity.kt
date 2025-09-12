@@ -3,17 +3,21 @@ package com.example.componentpanel.ui.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.example.componentpanel.R
-import com.example.componentpanel.model.MenuListItemData
-import com.example.componentpanel.model.MenuListGroupData
-import com.example.componentpanel.model.ToolBarItemData
+import com.example.componentpanel.model.basemodel.MenuListItemData
+import com.example.componentpanel.model.basemodel.MenuListGroupData
+import com.example.componentpanel.model.basemodel.TitleData
+import com.example.componentpanel.model.basemodel.ToolGroupData
+import com.example.componentpanel.model.basemodel.ToolItemData
+import com.example.componentpanel.model.observablemodel.ObservableTitleData
+import com.example.componentpanel.model.observablemodel.ObservableToolGroupData
+import com.example.componentpanel.model.observablemodel.ObservableToolItemData
 import com.example.componentpanel.ui.view.compositview.MenuListView
-import com.example.componentpanel.ui.view.baseview.TitleBarView
-import com.example.componentpanel.ui.view.compositview.ToolBarView
+import com.example.componentpanel.ui.view.baseview.TitleView
+import com.example.componentpanel.ui.view.compositview.ToolGroupView
 import com.example.componentpanel.viewmodel.TitleBarViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.sqrt
@@ -27,30 +31,86 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var bottomSheetTopArea: View
-    private lateinit var titleBarView: TitleBarView
+    private lateinit var titleView: TitleView
     private lateinit var titleBarViewModel: TitleBarViewModel
 
-    private lateinit var toolBarView: ToolBarView
+    private lateinit var toolGroupView: ToolGroupView
     private lateinit var menuListView: MenuListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
-        initTitleViewModel()
+        initTitleView()
         initToolBarView()
-        initMenuListView()
+        // initMenuListView()
     }
 
+    // 调试用途：动态添加子项，动态更改点击事件
     private fun initToolBarView() {
-        toolBarView = findViewById(R.id.item_tool_bar)
-        toolBarView.setItems(generateToolBarData())
+        toolGroupView = findViewById(R.id.test_tool)
+        val toolGroupData = ToolGroupData(generateToolBarData())
+        val observableToolGroupData = ObservableToolGroupData(toolGroupData)
+
+        observableToolGroupData.group.value?.forEach { itemData ->
+            when (itemData.text.value) {
+                "乐子1" -> {
+                    itemData.setOnViewClickListener{
+                        // 获取当前列表的一个可变副本，用可变的副本来操作，无需建立一个全新的
+                        // 话说这还不如直接把_group变为公有成员呢
+                        val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
+                        currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_yellow, "星星")))
+                        observableToolGroupData.setGroup(currentList)
+                    }
+                }
+                "乐子2" -> {
+                    itemData.setOnViewClickListener{
+                        // 把乐子1的点击事件给修改了
+                        // 顺便给它改了个图标
+                        observableToolGroupData.group.value?.forEach { itemData ->
+                            if (itemData.text.value == "乐子1") {
+                                itemData.setIconResId(R.drawable.ic_star_grey)
+                                itemData.setOnViewClickListener{
+                                    val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
+                                    currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_grey, "灰色星星")))
+                                    observableToolGroupData.setGroup(currentList)
+                                }
+                            }
+                        }
+                    }
+                }
+                "乐子3" -> {
+                    itemData.setOnViewClickListener{
+                        // 把乐子1的点击事件给修改了
+                        // 顺便给它改了个图标
+                        observableToolGroupData.group.value?.forEach { itemData ->
+                            if (itemData.text.value == "乐子1") {
+                                itemData.setIconResId(R.drawable.ic_star_yellow)
+                                itemData.setOnViewClickListener{
+                                    val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
+                                    currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_yellow, "黄色星星")))
+                                    observableToolGroupData.setGroup(currentList)
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    // 处理其他情况
+                }
+            }
+        }
+
+        toolGroupView.post {
+            toolGroupView.bind(observableToolGroupData)
+        }
     }
 
+    /*
     private fun initMenuListView() {
         menuListView = findViewById(R.id.item_menu_list)
         menuListView.setItems(generateMenuListData())
-    }
+    }*/
 
 
     // 调试用途：生成menu list测试数据
@@ -101,40 +161,47 @@ class MainActivity : AppCompatActivity() {
         return groups
     }
     // 调试用途：生成tool bar测试数据
-    private fun generateToolBarData(): MutableList<ToolBarItemData> {
+    private fun generateToolBarData(): MutableList<ToolItemData> {
         val dataList = mutableListOf(
-            ToolBarItemData(R.drawable.ic_save_as, "另存"),
-            ToolBarItemData(R.drawable.ic_share, "分享"),
-            ToolBarItemData(R.drawable.ic_print, "打印"),
-            ToolBarItemData(R.drawable.ic_paper_tools, "论文工具"),
-            ToolBarItemData(R.drawable.ic_find, "查找"),
-            ToolBarItemData(null, "乐子1"),
-            ToolBarItemData(null, "乐子2"),
-            ToolBarItemData(null, "乐子3"),
+            ToolItemData(R.drawable.ic_save_as, "另存"),
+            ToolItemData(R.drawable.ic_share, "分享"),
+            ToolItemData(R.drawable.ic_print, "打印"),
+            ToolItemData(R.drawable.ic_paper_tools, "论文工具"),
+            ToolItemData(R.drawable.ic_find, "查找"),
+            ToolItemData(null, "乐子1"),
+            ToolItemData(null, "乐子2"),
+            ToolItemData(null, "乐子3"),
         )
         return dataList
     }
 
     // 调试用途
-    private fun initTitleViewModel() {
-        titleBarView = findViewById(R.id.view_bottomSheet_title)
-        titleBarViewModel = TitleBarViewModel()
+    private fun initTitleView() {
+        titleView = findViewById(R.id.test_title)
 
-        titleBarView.setImageClickListener(TitleBarView.Companion.STAR) {
-            titleBarViewModel.toggleStarState()
-        }
+        val titleData = TitleData(
+            R.drawable.ic_title,
+            "新笔记",
+            "字数：0",
+            R.drawable.ic_star_grey,
+            null
+        )
+        val observableTitleData = ObservableTitleData(titleData)
 
-        titleBarViewModel.starState.observe(this) { starState ->
-            if (starState) {
-                titleBarView.setImage(TitleBarView.Companion.STAR, R.drawable.ic_star_yellow)
+        // 仅仅作为一个运行时切换的小例子：通过纯粹的操纵数据来改变视图
+        observableTitleData.setOnEndIconClickedListener {
+            when (observableTitleData.endIconResId.value) {
+                R.drawable.ic_star_grey -> {
+                    observableTitleData.setEndIconResId(R.drawable.ic_star_yellow)
+                }
+                R.drawable.ic_star_yellow -> {
+                    observableTitleData.setEndIconResId(R.drawable.ic_star_grey)
+                }
             }
-            else {
-                titleBarView.setImage(TitleBarView.Companion.STAR, R.drawable.ic_star_grey)
-            }
         }
-
-        titleBarViewModel.toastMessage.observe(this) { toastMessage ->
-            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
+        // 延迟绑定，确保视图已经附加到窗口
+        titleView.post {
+            titleView.bind(observableTitleData)
         }
     }
 

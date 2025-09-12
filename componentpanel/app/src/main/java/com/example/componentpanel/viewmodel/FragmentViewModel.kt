@@ -3,7 +3,7 @@ package com.example.componentpanel.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.componentpanel.model.MenuListGroupData
+import com.example.componentpanel.model.basemodel.MenuListGroupData
 
 // 别名，只在当前.kt文件内生效
 typealias MenuGroups = List<MenuListGroupData>

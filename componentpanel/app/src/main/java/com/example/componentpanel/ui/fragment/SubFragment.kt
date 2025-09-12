@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.componentpanel.R
-import com.example.componentpanel.model.MenuListGroupData
-import com.example.componentpanel.ui.view.baseview.TitleBarView
+import com.example.componentpanel.model.basemodel.MenuListGroupData
+import com.example.componentpanel.ui.view.baseview.TitleView
 import com.example.componentpanel.ui.view.compositview.MenuListView
 import com.example.componentpanel.viewmodel.FragmentViewModel
 
@@ -18,7 +18,7 @@ class SubFragment : Fragment() {
     private lateinit var viewModel: FragmentViewModel
     private lateinit var menuListView: MenuListView
 
-    private lateinit var titleView: TitleBarView
+    private lateinit var titleView: TitleView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

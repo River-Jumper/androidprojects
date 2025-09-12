@@ -3,11 +3,15 @@ package com.example.componentpanel.ui.view.baseview
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.componentpanel.R
+import com.example.componentpanel.model.observablemodel.ObservableMenuListItemData
+import com.example.componentpanel.ui.view.Bindable
 
-class MenuListActionView @JvmOverloads constructor(
+class MenuListItemView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
-) : AbstractBaseView(context, attrs) {
+) : AbstractBaseView(context, attrs), Bindable<ObservableMenuListItemData> {
     companion object {
         const val START_ICON = "startIcon"
         const val END_ICON = "endIcon"
@@ -23,6 +27,60 @@ class MenuListActionView @JvmOverloads constructor(
         imageViews[END_ICON] = findViewById(R.id.imageView_bottomSheet_bar_end_icon)
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_bar_text)
         textViews[SUB_TEXT] = findViewById(R.id.textView_bottomSheet_bar_subText)
+    }
+
+    private var boundData: ObservableMenuListItemData? = null
+    private var lifecycleOwner: LifecycleOwner? = null
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        lifecycleOwner = findViewTreeLifecycleOwner()
+    }
+
+    override fun onDetachedFromWindow() {
+        unbind()
+        super.onDetachedFromWindow()
+    }
+
+    override fun bind(data: ObservableMenuListItemData) {
+        unbind()
+        this.boundData = data
+        val owner = lifecycleOwner ?: return
+        data.startIconResId.observe(owner) { resId ->
+            if (resId != null) {
+                setImage(START_ICON, resId)
+            }
+        }
+        data.text.observe(owner) { text ->
+            if (text != null) {
+                setText(TEXT, text)
+            }
+        }
+        data.subText.observe(owner) { subText ->
+            if (subText != null) {
+                setText(SUB_TEXT, subText)
+            }
+        }
+        data.endIconResId.observe(owner) { resId ->
+            if (resId != null) {
+                setImage(END_ICON, resId)
+            }
+        }
+        data.onViewClickListener.observe(owner) { listener ->
+            setViewClickListener(listener)
+        }
+    }
+
+    override fun unbind() {
+        if (boundData != null && lifecycleOwner != null) {
+            boundData?.startIconResId?.removeObservers(lifecycleOwner!!)
+            boundData?.text?.removeObservers(lifecycleOwner!!)
+            boundData?.subText?.removeObservers(lifecycleOwner!!)
+            boundData?.endIconResId?.removeObservers(lifecycleOwner!!)
+            boundData?.onViewClickListener?.removeObservers(lifecycleOwner!!)
+        }
+        boundData = null
+        setViewClickListener(null)
     }
 }
 

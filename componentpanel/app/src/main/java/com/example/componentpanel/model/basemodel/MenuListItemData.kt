@@ -1,4 +1,4 @@
-package com.example.componentpanel.model
+package com.example.componentpanel.model.basemodel
 
 data class MenuListItemData(
     // val id: String,
@@ -7,5 +7,5 @@ data class MenuListItemData(
     val subText: String? = null,
     val endIconResId: Int? = null,
     val onViewClickListener: (() -> Unit)? = null,
-    var nextGroups: List<MenuListGroupData>? = null,
+    val nextGroups: List<MenuListGroupData>? = null,
 )

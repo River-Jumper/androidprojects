@@ -1,6 +1,6 @@
-package com.example.componentpanel.model
+package com.example.componentpanel.model.basemodel
 
-data class ToolBarItemData(
+data class ToolItemData(
     // val id: String,
     var iconResId: Int? = null,
     var text: String? = null,

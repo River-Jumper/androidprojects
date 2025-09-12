@@ -2,11 +2,8 @@ package com.example.componentpanel.ui.view.compositview
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import com.example.componentpanel.R
-import com.example.componentpanel.model.MenuListGroupData
+import com.example.componentpanel.model.basemodel.MenuListGroupData
 
 // 子项是menu list的一个组(GroupView)
 class MenuListView @JvmOverloads constructor(
