@@ -17,7 +17,7 @@
         android:contentDescription="这里只有menu list被包在这里面">
 
             <!--这里是按照scrollView + linearLayout设计的-->
-        <com.example.componentpanel.ui.view.compositview.MenuListView
+        <com.example.componentpanel.ui.view.compositview.MenuListGroupsView
             android:id="@+id/item_menu_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

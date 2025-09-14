@@ -29,7 +29,7 @@
                 android:id="@+id/test_tool"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <com.example.componentpanel.ui.view.compositview.MenuListView
+            <com.example.componentpanel.ui.view.compositview.MenuListGroupsView
                 android:id="@+id/test_menu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

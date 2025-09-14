@@ -16,7 +16,8 @@ import com.example.componentpanel.model.observablemodel.ObservableToolItemData
 class ToolGroupView@JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : AbstractCompositeView<ObservableToolItemData, ToolBarItemView>(context, attrs), Bindable<ObservableToolGroupData> {
+) : AbstractCompositeView<ObservableToolItemData, ToolBarItemView>(context, attrs)
+    , Bindable<ObservableToolGroupData> {
 
     // 创建每个子视图的时候就做好了子视图的数据绑定工作
     override fun createItemView(data: ObservableToolItemData): ToolBarItemView {

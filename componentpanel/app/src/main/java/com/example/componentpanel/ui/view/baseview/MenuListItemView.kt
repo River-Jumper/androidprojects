@@ -32,9 +32,15 @@ class MenuListItemView @JvmOverloads constructor(
     private var boundData: ObservableMenuListItemData? = null
     private var lifecycleOwner: LifecycleOwner? = null
 
+    private var pendingData: ObservableMenuListItemData? = null
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         lifecycleOwner = findViewTreeLifecycleOwner()
+        pendingData?.let { data ->
+            pendingData = null
+            bind(data)
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -45,7 +51,11 @@ class MenuListItemView @JvmOverloads constructor(
     override fun bind(data: ObservableMenuListItemData) {
         unbind()
         this.boundData = data
-        val owner = lifecycleOwner ?: return
+        val owner = lifecycleOwner
+        if (owner == null) {
+            pendingData = data
+            return
+        }
         data.startIconResId.observe(owner) { resId ->
             if (resId != null) {
                 setImage(START_ICON, resId)

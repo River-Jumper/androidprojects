@@ -9,13 +9,17 @@ import androidx.core.view.isVisible
 import com.example.componentpanel.R
 import com.example.componentpanel.model.basemodel.MenuListItemData
 import com.example.componentpanel.model.basemodel.MenuListGroupData
+import com.example.componentpanel.model.basemodel.MenuListGroupsData
 import com.example.componentpanel.model.basemodel.TitleData
 import com.example.componentpanel.model.basemodel.ToolGroupData
 import com.example.componentpanel.model.basemodel.ToolItemData
+import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupData
+import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupsData
+import com.example.componentpanel.model.observablemodel.ObservableMenuListItemData
 import com.example.componentpanel.model.observablemodel.ObservableTitleData
 import com.example.componentpanel.model.observablemodel.ObservableToolGroupData
 import com.example.componentpanel.model.observablemodel.ObservableToolItemData
-import com.example.componentpanel.ui.view.compositview.MenuListView
+import com.example.componentpanel.ui.view.compositview.MenuListGroupsView
 import com.example.componentpanel.ui.view.baseview.TitleView
 import com.example.componentpanel.ui.view.compositview.ToolGroupView
 import com.example.componentpanel.viewmodel.TitleBarViewModel
@@ -35,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var titleBarViewModel: TitleBarViewModel
 
     private lateinit var toolGroupView: ToolGroupView
-    private lateinit var menuListView: MenuListView
+    private lateinit var menuListGroupsView: MenuListGroupsView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         initView()
         initTitleView()
         initToolBarView()
-        // initMenuListView()
+        initMenuListView()
     }
 
     // 调试用途：动态添加子项，动态更改点击事件
@@ -106,11 +110,55 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*
+    // 测试用途
     private fun initMenuListView() {
-        menuListView = findViewById(R.id.item_menu_list)
-        menuListView.setItems(generateMenuListData())
-    }*/
+        menuListGroupsView = findViewById(R.id.test_menu)
+        val menuListGroupsData = MenuListGroupsData(generateMenuListData())
+        val observableMenuListGroupsData = ObservableMenuListGroupsData(menuListGroupsData)
+
+        val menuListGroups = observableMenuListGroupsData.groups.value
+        val menuListGroup0 = menuListGroups?.get(0)?.group?.value
+        val renameItem = menuListGroup0?.get(0)
+        val sendItem = menuListGroup0?.get(2)
+        val addItem = menuListGroup0?.get(3)
+        // 测试更换子项的图标等属性
+        renameItem?.setOnViewClickListener {
+            when(renameItem.endIconResId.value) {
+                R.drawable.ic_star_yellow -> {
+                    renameItem.setEndIconResId(R.drawable.ic_star_grey)
+                }
+                R.drawable.ic_star_grey -> {
+                    renameItem.setEndIconResId(R.drawable.ic_star_yellow)
+                }
+                else -> {
+                    renameItem.setEndIconResId(R.drawable.ic_star_yellow)
+                }
+            }
+        }
+        // 测试添加组的子项
+        addItem?.setOnViewClickListener {
+            val currentList = menuListGroups[0].group.value?.toMutableList()
+            currentList?.run {
+                this.add(ObservableMenuListItemData(MenuListItemData(R.drawable.ic_star_yellow, "黄色星星")))
+                menuListGroups[0].setGroup(this)
+            }
+        }
+        // 测试添加组别
+        val barItemsList1 =
+            mutableListOf(MenuListItemData(R.drawable.ic_star_grey, "灰色星星", null, null),)
+
+        sendItem?.setOnViewClickListener {
+            val currentList = observableMenuListGroupsData.groups.value?.toMutableList()
+            currentList?.run {
+                this.add(ObservableMenuListGroupData(MenuListGroupData(barItemsList1)))
+                observableMenuListGroupsData.setGroups(this)
+            }
+        }
+
+        menuListGroupsView.post {
+            menuListGroupsView.bind(observableMenuListGroupsData)
+        }
+    }
 
 
     // 调试用途：生成menu list测试数据
