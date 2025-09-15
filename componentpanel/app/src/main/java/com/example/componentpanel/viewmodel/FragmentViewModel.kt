@@ -16,6 +16,7 @@ class FragmentViewModel : ViewModel() {
     fun nextLevelGroups(nextGroups: MenuGroups) {
         // 加了个为空抛异常(是!!做的事情)
         // 但是是一个不好的行为，因为必然会崩溃
+        // ps:这里的设计是有问题的
         stack.addLast(_curGroups.value!!)
         _curGroups.value = nextGroups
     }

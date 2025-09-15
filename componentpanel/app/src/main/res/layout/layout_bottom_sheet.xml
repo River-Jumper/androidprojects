@@ -9,7 +9,7 @@
     android:background="@android:color/white"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <com.example.componentpanel.ui.view.baseview.TitleView
+    <!--<com.example.componentpanel.ui.view.baseview.TitleView
         android:id="@+id/test_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <!--这里是按照scrollView + linearLayout设计的-->
+            &lt;!&ndash;这里是按照scrollView + linearLayout设计的&ndash;&gt;
             <com.example.componentpanel.ui.view.compositview.ToolGroupView
                 android:id="@+id/test_tool"
                 android:layout_width="match_parent"
@@ -35,12 +35,21 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>-->
     <!--Fragment容器，用于动态替换BottomSheet内容（包含TitleBar和内容）-->
     <!--<FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />-->
+
+    <!-- NavHostFragment 容器，用于 BottomSheet 内的 Fragment 导航 -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navGraph="@navigation/nav_graph"
+        app:defaultNavHost="false" />
 
 </LinearLayout>
 

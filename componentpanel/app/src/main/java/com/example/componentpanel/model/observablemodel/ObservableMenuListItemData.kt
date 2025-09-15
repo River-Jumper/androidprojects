@@ -12,14 +12,17 @@ class ObservableMenuListItemData(data: MenuListItemData) {
     private val _subText = MutableLiveData<String?>(data.subText)
     private val _endIconResId = MutableLiveData<Int?>(data.endIconResId)
     private val _onViewClickListener = MutableLiveData<(() -> Unit)?>(data.onViewClickListener)
-    private val _nextGroups = MutableLiveData<Groups?>(data.nextGroups)
+    // private val _nextGroups = MutableLiveData<Groups?>(data.nextGroups)
+    private val _nextGroups = MutableLiveData<ObservableMenuListGroupsData?>(
+        data.nextGroups?.let { ObservableMenuListGroupsData(it) }
+    )
 
     val startIconResId: LiveData<Int?> = _startIconResId
     val text: LiveData<String?> = _text
     val subText: LiveData<String?> = _subText
     val endIconResId: LiveData<Int?> = _endIconResId
     val onViewClickListener: LiveData<(() -> Unit)?> = _onViewClickListener
-    val nextGroups: LiveData<Groups?> = _nextGroups
+    val nextGroups: LiveData<ObservableMenuListGroupsData?> = _nextGroups
 
     fun setStartIconResId(resId: Int?) {
         _startIconResId.value = resId
@@ -36,7 +39,7 @@ class ObservableMenuListItemData(data: MenuListItemData) {
     fun setOnViewClickListener(listener: (() -> Unit)?) {
         _onViewClickListener.value = listener
     }
-    fun setNextGroups(groups: Groups?) {
+    fun setNextGroups(groups: ObservableMenuListGroupsData?) {
         _nextGroups.value = groups
     }
     fun setData(data: MenuListItemData) {
@@ -45,6 +48,6 @@ class ObservableMenuListItemData(data: MenuListItemData) {
         setSubText(data.subText)
         setEndIconResId(data.endIconResId)
         setOnViewClickListener(data.onViewClickListener)
-        setNextGroups(data.nextGroups)
+        setNextGroups(data.nextGroups?.let { ObservableMenuListGroupsData(it) })
     }
 }

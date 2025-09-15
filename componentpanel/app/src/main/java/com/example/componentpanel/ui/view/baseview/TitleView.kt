@@ -17,6 +17,7 @@ class TitleView @JvmOverloads constructor(
         const val MAIN_TITLE = "mainTitle"
         const val SUB_TITLE = "subTitle"
         const val END_ICON = "endIcon"
+        const val MID_TITLE = "midTitle"
     }
     
     override fun inflateLayout() {
@@ -28,6 +29,7 @@ class TitleView @JvmOverloads constructor(
         imageViews[END_ICON] = findViewById(R.id.imageView_bottomSheet_title_star)
         textViews[MAIN_TITLE] = findViewById(R.id.textView_bottomSheet_title_mainTitle)
         textViews[SUB_TITLE] = findViewById(R.id.textView_bottomSheet_title_subTitle)
+        imageViews[MID_TITLE] = findViewById(R.id.textView_bottomSheet_title_midTitle)
     }
 
     private var boundData: ObservableTitleData? = null

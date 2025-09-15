@@ -3,6 +3,7 @@ package com.example.componentpanel.ui.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -22,9 +23,11 @@ import com.example.componentpanel.model.observablemodel.ObservableToolItemData
 import com.example.componentpanel.ui.view.compositview.MenuListGroupsView
 import com.example.componentpanel.ui.view.baseview.TitleView
 import com.example.componentpanel.ui.view.compositview.ToolGroupView
+import com.example.componentpanel.viewmodel.MainViewModel
 import com.example.componentpanel.viewmodel.TitleBarViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.sqrt
+import androidx.navigation.fragment.findNavController
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,17 +44,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolGroupView: ToolGroupView
     private lateinit var menuListGroupsView: MenuListGroupsView
 
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
-        initTitleView()
+        /*initTitleView()
         initToolBarView()
-        initMenuListView()
+        initMenuListView()*/
+    }
+
+    private fun createSubFragment(title: String, nextGroups: ObservableMenuListGroupsData) {
+        viewModel.goForward(nextGroups)
+        // 2. 使用 Navigation 创建新的 SubFragment
+        // findNavController().navigate(
+        //     SubFragmentDirections.actionMainToSub(title)
+        // )
     }
 
     // 调试用途：动态添加子项，动态更改点击事件
-    private fun initToolBarView() {
+    /*private fun initToolBarView() {
         toolGroupView = findViewById(R.id.test_tool)
         val toolGroupData = ToolGroupData(generateToolBarData())
         val observableToolGroupData = ObservableToolGroupData(toolGroupData)
@@ -108,10 +121,10 @@ class MainActivity : AppCompatActivity() {
         toolGroupView.post {
             toolGroupView.bind(observableToolGroupData)
         }
-    }
+    }*/
 
     // 测试用途
-    private fun initMenuListView() {
+    /*private fun initMenuListView() {
         menuListGroupsView = findViewById(R.id.test_menu)
         val menuListGroupsData = MenuListGroupsData(generateMenuListData())
         val observableMenuListGroupsData = ObservableMenuListGroupsData(menuListGroupsData)
@@ -158,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         menuListGroupsView.post {
             menuListGroupsView.bind(observableMenuListGroupsData)
         }
-    }
+    }*/
 
 
     // 调试用途：生成menu list测试数据
@@ -224,7 +237,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 调试用途
-    private fun initTitleView() {
+    /*private fun initTitleView() {
         titleView = findViewById(R.id.test_title)
 
         val titleData = TitleData(
@@ -251,7 +264,7 @@ class MainActivity : AppCompatActivity() {
         titleView.post {
             titleView.bind(observableTitleData)
         }
-    }
+    }*/
 
     // 其实这里的透明度计算，和各种隐藏显示底部抽屉的逻辑是最想塞到viewModel的地方，但是目前不知道怎么塞
     private fun initView() {

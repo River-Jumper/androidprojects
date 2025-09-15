@@ -7,5 +7,5 @@ data class MenuListItemData(
     val subText: String? = null,
     val endIconResId: Int? = null,
     val onViewClickListener: (() -> Unit)? = null,
-    val nextGroups: List<MenuListGroupData>? = null,
+    val nextGroups: MenuListGroupsData? = null,
 )

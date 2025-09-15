@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -49,4 +50,9 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     /*为了读取url添加的依赖*/
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    /*为了使用by activityViewModels()*/
+    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    /*为了使用navigation导航库*/
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
 }

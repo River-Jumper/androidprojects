@@ -3,3 +3,10 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
 }
+
+buildscript {
+    dependencies {
+        // 加入 Safe Args 插件
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.3")
+    }
+}
