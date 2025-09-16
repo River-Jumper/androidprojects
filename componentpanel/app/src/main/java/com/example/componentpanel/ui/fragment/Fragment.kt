@@ -1,0 +1,101 @@
+package com.example.componentpanel.ui.fragment
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
+import com.example.componentpanel.R
+import com.example.componentpanel.ui.view.baseview.TitleView
+import com.example.componentpanel.ui.view.compositview.MenuListGroupsView
+import com.example.componentpanel.viewmodel.MenuViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.componentpanel.ui.view.compositview.ToolGroupView
+import com.example.componentpanel.viewmodel.TitleViewModel
+import com.example.componentpanel.viewmodel.ToolViewModel
+
+
+class Fragment : Fragment() {
+    private lateinit var menuViewModel: MenuViewModel
+    private lateinit var titleViewModel: TitleViewModel
+    private lateinit var toolViewModel: ToolViewModel
+    private lateinit var menuListGroupsView: MenuListGroupsView
+    private lateinit var titleView: TitleView
+    private lateinit var toolGroupView: ToolGroupView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        menuViewModel = ViewModelProvider(requireActivity())[MenuViewModel::class.java]
+        titleViewModel = ViewModelProvider(requireActivity())[TitleViewModel::class.java]
+        toolViewModel = ViewModelProvider(requireActivity())[ToolViewModel::class.java]
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_bottom_sheet, container, false)
+        menuListGroupsView = view.findViewById(R.id.item_menu_list)
+        titleView = view.findViewById(R.id.view_bottomSheet_title)
+        toolGroupView = view.findViewById(R.id.item_tool_bar)
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindData()
+        // 这里的返回事件并不是可配置的，干脆直接写死了
+        // 主要是发现这个返回事件好像只能够放置在fragment中，在activity中写不了，因为是针对fragment的退栈操作
+        if (menuViewModel.canGoBack()) {
+            titleView.setImageClickListener(TitleView.START_ICON) {
+                when(menuViewModel.canGoBack()) {
+                    true -> {
+                        stackGoBack()
+                        findNavController().popBackStack()
+                    }
+                    false -> requireActivity().finish()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bindData()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            when(menuViewModel.canGoBack()) {
+                true -> {
+                    stackGoBack()
+                    findNavController().popBackStack()
+                }
+                false -> requireActivity().finish()
+            }
+        }
+    }
+
+    private fun bindData() {
+        menuViewModel.curItem?.let { groups ->
+            menuListGroupsView.bind(groups)
+        }
+        toolViewModel.curItem?.let { groups ->
+            toolGroupView.bind(groups)
+        }
+        titleViewModel.curItem?.let { groups ->
+            titleView.bind(groups)
+        }
+    }
+    private fun stackGoBack() {
+        if (menuViewModel.canGoBack()) {
+            menuViewModel.goBack()
+        }
+        if (toolViewModel.canGoBack()) {
+            toolViewModel.goBack()
+        }
+        if (titleViewModel.canGoBack()) {
+            titleViewModel.goBack()
+        }
+    }
+}

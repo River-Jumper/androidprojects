@@ -2,28 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/fragment">
 
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.example.componentpanel.ui.fragment.MainFragment"
-        android:label="Main">
-        
-        <action
-            android:id="@+id/actionMainToSub"
-            app:destination="@id/subFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/subFragment"
-        android:name="com.example.componentpanel.ui.fragment.SubFragment"
+        android:id="@+id/fragment"
+        android:name="com.example.componentpanel.ui.fragment.Fragment"
         android:label="Sub">
-        <argument
-            android:name="title"
-            app:argType="string" />
         
         <action
-            android:id="@+id/actionSubFragmentSelf"
-            app:destination="@id/subFragment" />
+            android:id="@+id/actionFragmentSelf"
+            app:destination="@id/fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 </navigation>

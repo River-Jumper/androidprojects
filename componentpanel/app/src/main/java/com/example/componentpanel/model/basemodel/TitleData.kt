@@ -5,5 +5,6 @@ data class TitleData (
     val mainTitle: String? = null,
     val subTitle: String? = null,
     val endIconResId: Int? = null,
+    val midTitle: String? = null,
     val onEndIconClickedListener: (() -> Unit)? = null,
 )

@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import com.example.componentpanel.R
 import com.example.componentpanel.model.basemodel.MenuListItemData
 import com.example.componentpanel.model.basemodel.MenuListGroupData
@@ -14,20 +15,15 @@ import com.example.componentpanel.model.basemodel.MenuListGroupsData
 import com.example.componentpanel.model.basemodel.TitleData
 import com.example.componentpanel.model.basemodel.ToolGroupData
 import com.example.componentpanel.model.basemodel.ToolItemData
-import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupData
 import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupsData
-import com.example.componentpanel.model.observablemodel.ObservableMenuListItemData
 import com.example.componentpanel.model.observablemodel.ObservableTitleData
 import com.example.componentpanel.model.observablemodel.ObservableToolGroupData
-import com.example.componentpanel.model.observablemodel.ObservableToolItemData
-import com.example.componentpanel.ui.view.compositview.MenuListGroupsView
-import com.example.componentpanel.ui.view.baseview.TitleView
-import com.example.componentpanel.ui.view.compositview.ToolGroupView
-import com.example.componentpanel.viewmodel.MainViewModel
-import com.example.componentpanel.viewmodel.TitleBarViewModel
+import com.example.componentpanel.viewmodel.MenuViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.sqrt
-import androidx.navigation.fragment.findNavController
+import com.example.componentpanel.ui.fragment.FragmentDirections
+import com.example.componentpanel.viewmodel.ToolViewModel
+import com.example.componentpanel.viewmodel.TitleViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,29 +34,75 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var bottomSheetTopArea: View
-    private lateinit var titleView: TitleView
-    private lateinit var titleBarViewModel: TitleBarViewModel
+    private lateinit var navController: NavController
 
-    private lateinit var toolGroupView: ToolGroupView
-    private lateinit var menuListGroupsView: MenuListGroupsView
+    private val menuViewModel: MenuViewModel by viewModels()
+    private val titleViewModel: TitleViewModel by viewModels()
+    private val toolViewModel: ToolViewModel by viewModels()
 
-    private val viewModel: MainViewModel by viewModels()
+    private lateinit var menuData: ObservableMenuListGroupsData
+    private lateinit var titleData: ObservableTitleData
+    private lateinit var toolData: ObservableToolGroupData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initView()
-        /*initTitleView()
-        initToolBarView()
-        initMenuListView()*/
+        initViewModel()
+        initNavigation()
+    }
+
+    private fun initViewModel() {
+        menuData = ObservableMenuListGroupsData(MenuListGroupsData(generateMenuListData()))
+        menuViewModel.setRoot(menuData)
+        toolData = ObservableToolGroupData(ToolGroupData(generateToolBarData()))
+        toolViewModel.setRoot(toolData)
+        titleData = ObservableTitleData(generateTitleData())
+        titleViewModel.setRoot(titleData)
+
+        menuViewModel.curItem?.run {
+            addGoToNextFragmentListener(this)
+        }
+    }
+
+    // 深度遍历添加进入下级fragment的监听
+    // 一旦成环你就完蛋了
+    // 解决方法：记录节点，成环就断掉
+    private fun addGoToNextFragmentListener(groups: ObservableMenuListGroupsData) {
+        groups.groups.value?.forEach { group ->
+            group.group.value?.forEach { item ->
+                // 能够添加监听的条件：item.nextGroups不为空
+                item.nextGroups.value?.run {
+                    item.setOnViewClickListener {
+                        createSubFragment(item.text.value ?: "", this)
+                    }
+                    addGoToNextFragmentListener(this)
+                }
+            }
+        }
+    }
+
+    private fun initNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment_container) as? androidx.navigation.fragment.NavHostFragment
+        navController = navHostFragment?.navController ?: return
     }
 
     private fun createSubFragment(title: String, nextGroups: ObservableMenuListGroupsData) {
-        viewModel.goForward(nextGroups)
-        // 2. 使用 Navigation 创建新的 SubFragment
-        // findNavController().navigate(
-        //     SubFragmentDirections.actionMainToSub(title)
-        // )
+        menuViewModel.goForward(nextGroups)
+        titleViewModel.goForward(
+            ObservableTitleData(
+                TitleData(
+                    startIconResId = R.drawable.ic_go_back,
+                    midTitle = title,
+                )
+            )
+        )
+        toolViewModel.goForward(null)
+
+        navController.navigate(
+            FragmentDirections.actionFragmentSelf()
+        )
     }
 
     // 调试用途：动态添加子项，动态更改点击事件
@@ -176,37 +218,95 @@ class MainActivity : AppCompatActivity() {
 
     // 调试用途：生成menu list测试数据
     private fun generateMenuListData(): MutableList<MenuListGroupData> {
+        // 添加到
+        val addToGroups = MenuListGroupsData(
+                mutableListOf(
+                    MenuListGroupData(
+                    mutableListOf(
+                        MenuListItemData(R.drawable.ic_start, "星标"),
+                        MenuListItemData(R.drawable.ic_label, "标签"),
+                        MenuListItemData(R.drawable.ic_add_shortcut, "添加快捷方式到"),
+                        MenuListItemData(R.drawable.ic_add_quickaccess, "添加到快速访问"),
+                        MenuListItemData(R.drawable.ic_add_home, "添加到主屏幕"),
+                    )
+                )
+            )
+        )
+
+        val moreExportChangeGroups = MenuListGroupsData(
+                mutableListOf(
+                    MenuListGroupData(
+                    mutableListOf(
+                        MenuListItemData(R.drawable.ic_export_text, "导出高亮文本"),
+                        MenuListItemData(R.drawable.ic_extract_images, "批量提取图片"),
+                        MenuListItemData(R.drawable.ic_save_template, "保存为自定义模板", subText = "减少重复性工作"),
+                        MenuListItemData(R.drawable.ic_extract_page, "提取页面"),
+                        MenuListItemData(R.drawable.ic_merge_docs, "合并文档"),
+                        // 这里改动了一下，测试了一下两级页面
+                        MenuListItemData(R.drawable.ic_doc_optimize, "文档瘦身", endIconResId = R.drawable.ic_go_forward, nextGroups = addToGroups),
+                    )
+                )
+            )
+        )
+
+        val aiConvertChangeGroups = MenuListGroupsData(
+                mutableListOf(
+                    MenuListGroupData(
+                    mutableListOf(
+                        MenuListItemData(R.drawable.ic_ai_ppt, "AI生成PPT"),
+                        MenuListItemData(R.drawable.ic_ai_mindmap, "AI文档脑图"),
+                    )
+                )
+            )
+        )
+
+        val encryptionGroups = MenuListGroupsData(
+                mutableListOf(
+                    MenuListGroupData(
+                    mutableListOf(
+                        MenuListItemData(R.drawable.ic_doc_lock, "文档加密"),
+                        MenuListItemData(R.drawable.ic_doc_verify, "文档认证"),
+                    )
+                )
+            )
+        )
+
+        val backupGroups = MenuListGroupsData(
+                mutableListOf(
+                    MenuListGroupData(
+                    mutableListOf(
+                        MenuListItemData(R.drawable.ic_doc_repair, "文档修复"),
+                        MenuListItemData(R.drawable.ic_history, "历史版本"),
+                    )
+                )
+            )
+        )
+
         // 各个组内项
         val barItemsList1 = mutableListOf(
             MenuListItemData(R.drawable.ic_rename, "重命名", null, null),
             MenuListItemData(R.drawable.ic_move_copy, "移动或复制", null, null),
             MenuListItemData(R.drawable.ic_send_to, "发送到", "电脑、手机等其他设备", null),
-            MenuListItemData(R.drawable.ic_add_to, "添加到", null, R.drawable.ic_drop_down),
+            MenuListItemData(R.drawable.ic_add_to, "添加到", null, R.drawable.ic_go_forward, nextGroups = addToGroups),
         )
         val barItemList2 = mutableListOf(
             MenuListItemData(R.drawable.ic_export_pdf, "输出为pdf", null, null),
             MenuListItemData(R.drawable.ic_export_image, "输出为图片", null, null),
-            MenuListItemData(R.drawable.ic_more_export, "更多输出转换", "合并、瘦身", R.drawable.ic_drop_down),
-            MenuListItemData(R.drawable.ic_ai_convert, "AI生成转换", "PPT、截图", R.drawable.ic_drop_down),
+            MenuListItemData(R.drawable.ic_more_export, "更多输出转换", "合并、瘦身", R.drawable.ic_go_forward, nextGroups = moreExportChangeGroups),
+            MenuListItemData(R.drawable.ic_ai_convert, "AI生成转换", "PPT、截图", R.drawable.ic_go_forward, nextGroups = aiConvertChangeGroups),
         )
         val barItemList3 = mutableListOf(
             MenuListItemData(R.drawable.ic_tts, "语音朗读", null, null),
-            MenuListItemData(R.drawable.ic_all_services, "全部服务", null, R.drawable.ic_drop_down),
+            MenuListItemData(R.drawable.ic_all_services, "全部服务", null, R.drawable.ic_go_forward),
         )
         val barItemList4 = mutableListOf(
-            MenuListItemData(R.drawable.ic_backup_restore, "备份与恢复", null, R.drawable.ic_drop_down),
-            MenuListItemData(R.drawable.ic_lock_auth, "加密与认证", null, R.drawable.ic_drop_down),
+            MenuListItemData(R.drawable.ic_backup_restore, "备份与恢复", null, R.drawable.ic_go_forward, nextGroups = backupGroups),
+            MenuListItemData(R.drawable.ic_lock_auth, "加密与认证", null, R.drawable.ic_go_forward, nextGroups = encryptionGroups),
             MenuListItemData(R.drawable.ic_open_location, "打开文件位置", null, null),
             MenuListItemData(R.drawable.ic_doc_info, "文档信息", null, null),
         )
         val barItemList5 = mutableListOf(
             MenuListItemData(R.drawable.ic_help_feedback, "帮助与反馈", null, null),
-        )
-        val barItemList6 = mutableListOf(
-            MenuListItemData(R.drawable.ic_backup_restore, "备份与恢复", null, R.drawable.ic_drop_down),
-            MenuListItemData(R.drawable.ic_lock_auth, "加密与认证", null, R.drawable.ic_drop_down),
-            MenuListItemData(R.drawable.ic_open_location, "打开文件位置", null, null),
-            MenuListItemData(R.drawable.ic_doc_info, "文档信息", null, null),
         )
 
         // 总体的组
@@ -216,7 +316,6 @@ class MainActivity : AppCompatActivity() {
             MenuListGroupData(barItemList3),
             MenuListGroupData(barItemList4),
             MenuListGroupData(barItemList5),
-            MenuListGroupData(barItemList6),
         )
 
         return groups
@@ -234,6 +333,16 @@ class MainActivity : AppCompatActivity() {
             ToolItemData(null, "乐子3"),
         )
         return dataList
+    }
+
+    private fun generateTitleData(): TitleData {
+        return TitleData(
+            R.drawable.ic_title,
+            "新笔记",
+            "字数：0",
+            R.drawable.ic_star_grey,
+            null
+        ) { hideBottomSheet() }
     }
 
     // 调试用途

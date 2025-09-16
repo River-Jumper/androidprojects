@@ -29,7 +29,7 @@ class TitleView @JvmOverloads constructor(
         imageViews[END_ICON] = findViewById(R.id.imageView_bottomSheet_title_star)
         textViews[MAIN_TITLE] = findViewById(R.id.textView_bottomSheet_title_mainTitle)
         textViews[SUB_TITLE] = findViewById(R.id.textView_bottomSheet_title_subTitle)
-        imageViews[MID_TITLE] = findViewById(R.id.textView_bottomSheet_title_midTitle)
+        textViews[MID_TITLE] = findViewById(R.id.textView_bottomSheet_title_midTitle)
     }
 
     private var boundData: ObservableTitleData? = null
@@ -80,6 +80,11 @@ class TitleView @JvmOverloads constructor(
         data.endIconResId.observe(owner) { resId ->
             if (resId != null) {
                 setImage(END_ICON, resId)
+            }
+        }
+        data.midTitle.observe(owner) { text ->
+            if (text != null) {
+                setText(MID_TITLE, text)
             }
         }
         data.onEndIconClickedListener.observe(owner) { listener ->
