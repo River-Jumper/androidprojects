@@ -5,15 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <!--这里暂时写了很多的硬编码的尺寸和边距，后续改掉-->
-    <!--尝试能不能把四角变得圆润一些-->
+
     <ImageView
         android:id="@+id/imageView_bottomSheet_title_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="对应组件的图标"
+        android:layout_width="@dimen/icon_size_large"
+        android:layout_height="@dimen/icon_size_large"
+        android:contentDescription="@string/icon"
         android:scaleType="fitCenter"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/margin_normal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,7 +21,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="@dimen/margin_normal"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -31,17 +30,17 @@
             android:id="@+id/textView_bottomSheet_title_mainTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_title_main"
             android:textStyle="bold"
             tools:text="新笔记" />
         <Space
             android:layout_width="match_parent"
-            android:layout_height="5dp" />
+            android:layout_height="@dimen/space_small" />
         <TextView
             android:id="@+id/textView_bottomSheet_title_subTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_title_sub"
             android:textStyle="normal"
             tools:text="字数：0" />
     </LinearLayout>
@@ -50,17 +49,18 @@
         android:id="@+id/imageView_bottomSheet_title_star"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/margin_normal"
+        android:contentDescription="@string/close"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:src="@drawable/ic_star_grey" />
+        tools:src="@drawable/ic_close" />
 
     <TextView
         android:id="@+id/textView_bottomSheet_title_midTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/margin_normal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

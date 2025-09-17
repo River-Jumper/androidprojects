@@ -17,10 +17,12 @@ class ObservableToolGroupData(data: ToolGroupData) {
         _group.value = initialGroup
     }
 
-    // 更改数据，请务必调用这个setGroup方法
+    // 如果是增删数据，请务必调用这个setGroup方法
     // 读取数据，倒是可以使用group.value方法
-    // 流程：setGroup(change(group.value))
+    // 流程：setGroup(change(getGroup()))
     fun setGroup(group: ToolGroup) {
         _group.value = group
     }
+
+    fun getGroup() = group.value?.toMutableList() ?: mutableListOf()
 }

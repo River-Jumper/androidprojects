@@ -17,10 +17,12 @@ class ObservableMenuListGroupsData(data: MenuListGroupsData) {
         _groups.value = initialGroups
     }
     
-    // 更改数据，请务必调用这个setGroups方法
+    // 如果是增删数据，请务必调用这个setGroups方法
     // 读取数据，倒是可以使用groups.value方法
-    // 流程：setGroups(change(groups.value))
+    // 流程：setGroups(change(getGroups()))
     fun setGroups(groups: MenuListGroups) {
         _groups.value = groups
     }
+
+    fun getGroups() = groups.value?.toMutableList() ?: mutableListOf()
 }

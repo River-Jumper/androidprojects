@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Margins -->
+    <dimen name="margin_normal">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    
+    <!-- Text Sizes -->
+    <dimen name="text_size_title_main">14sp</dimen>
+    <dimen name="text_size_title_normal">13sp</dimen>
+    <dimen name="text_size_title_sub">12sp</dimen>
+    
+    <!-- Spaces -->
+    <dimen name="space_small">5dp</dimen>
+    
+    <!-- Icon Sizes -->
+    <dimen name="icon_size_large">40dp</dimen>
+    <dimen name="icon_size_medium">80dp</dimen>
+    
+    <!-- Card Properties -->
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+</resources>

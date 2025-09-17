@@ -12,7 +12,6 @@ class ObservableMenuListItemData(data: MenuListItemData) {
     private val _subText = MutableLiveData<String?>(data.subText)
     private val _endIconResId = MutableLiveData<Int?>(data.endIconResId)
     private val _onViewClickListener = MutableLiveData<(() -> Unit)?>(data.onViewClickListener)
-    // private val _nextGroups = MutableLiveData<Groups?>(data.nextGroups)
     private val _nextGroups = MutableLiveData<ObservableMenuListGroupsData?>(
         data.nextGroups?.let { ObservableMenuListGroupsData(it) }
     )

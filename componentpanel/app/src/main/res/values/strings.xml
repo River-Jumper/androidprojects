@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">componentpanel</string>
     <string name="show">show</string>
+    <string name="icon">对应组件的图标</string>
+    <string name="close">关闭按钮</string>
+    <string name="menuListStartIcon">条形区前边的图标</string>
+    <string name="menuListEndIcon">条形区后边的图标</string>
+    <string name="scrollArea">tool bar和menu list被包在这里面</string>
+    <string name="toolIcon">工具栏的图标</string>
 </resources>

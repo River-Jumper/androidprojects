@@ -19,7 +19,7 @@ class MenuListItemView @JvmOverloads constructor(
         const val SUB_TEXT = "subText"
     }
     override fun inflateLayout() {
-        LayoutInflater.from(context).inflate(R.layout.item_menu_list_action, this, true)
+        LayoutInflater.from(context).inflate(R.layout.item_menu_list_item, this, true)
     }
 
     override fun collectViews() {
@@ -27,6 +27,10 @@ class MenuListItemView @JvmOverloads constructor(
         imageViews[END_ICON] = findViewById(R.id.imageView_bottomSheet_bar_end_icon)
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_bar_text)
         textViews[SUB_TEXT] = findViewById(R.id.textView_bottomSheet_bar_subText)
+        imageViews[START_ICON]?.isClickable = false
+        imageViews[END_ICON]?.isClickable = false
+        textViews[TEXT]?.isClickable = false
+        textViews[SUB_TEXT]?.isClickable = false
     }
 
     private var boundData: ObservableMenuListItemData? = null

@@ -18,12 +18,14 @@ class ToolBarItemView @JvmOverloads constructor(
     }
     
     override fun inflateLayout() {
-        LayoutInflater.from(context).inflate(R.layout.item_tool_bar_action, this, true)
+        LayoutInflater.from(context).inflate(R.layout.item_tool_bar_item, this, true)
     }
     
     override fun collectViews() {
         imageViews[ICON] = findViewById(R.id.imageView_bottomSheet_square_icon)
         textViews[TEXT] = findViewById(R.id.textView_bottomSheet_square_text)
+        imageViews[ICON]?.isClickable = false
+        textViews[TEXT]?.isClickable = false
     }
 
     private var boundData: ObservableToolItemData? = null

@@ -1,94 +1,69 @@
 package com.example.componentpanel.ui.activity
 
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import com.example.componentpanel.R
-import com.example.componentpanel.model.basemodel.MenuListItemData
-import com.example.componentpanel.model.basemodel.MenuListGroupData
-import com.example.componentpanel.model.basemodel.MenuListGroupsData
 import com.example.componentpanel.model.basemodel.TitleData
-import com.example.componentpanel.model.basemodel.ToolGroupData
-import com.example.componentpanel.model.basemodel.ToolItemData
 import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupsData
 import com.example.componentpanel.model.observablemodel.ObservableTitleData
-import com.example.componentpanel.model.observablemodel.ObservableToolGroupData
+import com.example.componentpanel.ui.manager.BottomSheetManager
 import com.example.componentpanel.viewmodel.MenuViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlin.math.sqrt
 import com.example.componentpanel.ui.fragment.FragmentDirections
+import com.example.componentpanel.ui.manager.DataInitializer
 import com.example.componentpanel.viewmodel.ToolViewModel
 import com.example.componentpanel.viewmodel.TitleViewModel
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private const val EXPANDED_OFFSET_RATIO = 0f
-        private const val ALPHA_CALCULATION_DIVISOR = 2f
+        // BottomSheet 相关常量
+        private val BOTTOM_SHEET_ID = R.id.bottomSheet
+        private val TOP_AREA_ID = R.id.bottom_sheet_top_area
+        private val TOGGLE_BUTTON_ID = R.id.show
+        private val FRAGMENT_CONTAINER_ID = R.id.fragment_container
     }
 
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    private lateinit var bottomSheetTopArea: View
     private lateinit var navController: NavController
+    private lateinit var bottomSheetManager: BottomSheetManager
+    private lateinit var dataInitializer: DataInitializer
 
     private val menuViewModel: MenuViewModel by viewModels()
     private val titleViewModel: TitleViewModel by viewModels()
     private val toolViewModel: ToolViewModel by viewModels()
 
-    private lateinit var menuData: ObservableMenuListGroupsData
-    private lateinit var titleData: ObservableTitleData
-    private lateinit var toolData: ObservableToolGroupData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initView()
-        initViewModel()
+        initBottomSheet()
+        initData()
         initNavigation()
     }
-
-    private fun initViewModel() {
-        menuData = ObservableMenuListGroupsData(MenuListGroupsData(generateMenuListData()))
-        menuViewModel.setRoot(menuData)
-        toolData = ObservableToolGroupData(ToolGroupData(generateToolBarData()))
-        toolViewModel.setRoot(toolData)
-        titleData = ObservableTitleData(generateTitleData())
-        titleViewModel.setRoot(titleData)
-
-        menuViewModel.curItem?.run {
-            addGoToNextFragmentListener(this)
-        }
+    private fun initBottomSheet() {
+        bottomSheetManager = BottomSheetManager(this)
+        bottomSheetManager.init(
+            bottomSheetId = BOTTOM_SHEET_ID,
+            topAreaId = TOP_AREA_ID,
+            toggleButtonId = TOGGLE_BUTTON_ID
+        )
     }
 
-    // 深度遍历添加进入下级fragment的监听
-    // 一旦成环你就完蛋了
-    // 解决方法：记录节点，成环就断掉
-    private fun addGoToNextFragmentListener(groups: ObservableMenuListGroupsData) {
-        groups.groups.value?.forEach { group ->
-            group.group.value?.forEach { item ->
-                // 能够添加监听的条件：item.nextGroups不为空
-                item.nextGroups.value?.run {
-                    item.setOnViewClickListener {
-                        createSubFragment(item.text.value ?: "", this)
-                    }
-                    addGoToNextFragmentListener(this)
-                }
-            }
-        }
+    private fun initData() {
+        dataInitializer = DataInitializer(this, titleViewModel, toolViewModel, menuViewModel)
+        // 函数引用的赋值
+        dataInitializer.hideBottomSheet = bottomSheetManager::hide
+        dataInitializer.createFragment = ::createFragment
     }
 
     private fun initNavigation() {
         val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.fragment_container) as? androidx.navigation.fragment.NavHostFragment
+            .findFragmentById(FRAGMENT_CONTAINER_ID) as? androidx.navigation.fragment.NavHostFragment
         navController = navHostFragment?.navController ?: return
     }
 
-    private fun createSubFragment(title: String, nextGroups: ObservableMenuListGroupsData) {
+    private fun createFragment(title: String, nextGroups: ObservableMenuListGroupsData) {
         menuViewModel.goForward(nextGroups)
         titleViewModel.goForward(
             ObservableTitleData(
@@ -103,333 +78,5 @@ class MainActivity : AppCompatActivity() {
         navController.navigate(
             FragmentDirections.actionFragmentSelf()
         )
-    }
-
-    // 调试用途：动态添加子项，动态更改点击事件
-    /*private fun initToolBarView() {
-        toolGroupView = findViewById(R.id.test_tool)
-        val toolGroupData = ToolGroupData(generateToolBarData())
-        val observableToolGroupData = ObservableToolGroupData(toolGroupData)
-
-        observableToolGroupData.group.value?.forEach { itemData ->
-            when (itemData.text.value) {
-                "乐子1" -> {
-                    itemData.setOnViewClickListener{
-                        // 获取当前列表的一个可变副本，用可变的副本来操作，无需建立一个全新的
-                        // 话说这还不如直接把_group变为公有成员呢
-                        val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
-                        currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_yellow, "星星")))
-                        observableToolGroupData.setGroup(currentList)
-                    }
-                }
-                "乐子2" -> {
-                    itemData.setOnViewClickListener{
-                        // 把乐子1的点击事件给修改了
-                        // 顺便给它改了个图标
-                        observableToolGroupData.group.value?.forEach { itemData ->
-                            if (itemData.text.value == "乐子1") {
-                                itemData.setIconResId(R.drawable.ic_star_grey)
-                                itemData.setOnViewClickListener{
-                                    val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
-                                    currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_grey, "灰色星星")))
-                                    observableToolGroupData.setGroup(currentList)
-                                }
-                            }
-                        }
-                    }
-                }
-                "乐子3" -> {
-                    itemData.setOnViewClickListener{
-                        // 把乐子1的点击事件给修改了
-                        // 顺便给它改了个图标
-                        observableToolGroupData.group.value?.forEach { itemData ->
-                            if (itemData.text.value == "乐子1") {
-                                itemData.setIconResId(R.drawable.ic_star_yellow)
-                                itemData.setOnViewClickListener{
-                                    val currentList = observableToolGroupData.group.value?.toMutableList() ?: mutableListOf()
-                                    currentList.add(ObservableToolItemData(ToolItemData(R.drawable.ic_star_yellow, "黄色星星")))
-                                    observableToolGroupData.setGroup(currentList)
-                                }
-                            }
-                        }
-                    }
-                }
-                else -> {
-                    // 处理其他情况
-                }
-            }
-        }
-
-        toolGroupView.post {
-            toolGroupView.bind(observableToolGroupData)
-        }
-    }*/
-
-    // 测试用途
-    /*private fun initMenuListView() {
-        menuListGroupsView = findViewById(R.id.test_menu)
-        val menuListGroupsData = MenuListGroupsData(generateMenuListData())
-        val observableMenuListGroupsData = ObservableMenuListGroupsData(menuListGroupsData)
-
-        val menuListGroups = observableMenuListGroupsData.groups.value
-        val menuListGroup0 = menuListGroups?.get(0)?.group?.value
-        val renameItem = menuListGroup0?.get(0)
-        val sendItem = menuListGroup0?.get(2)
-        val addItem = menuListGroup0?.get(3)
-        // 测试更换子项的图标等属性
-        renameItem?.setOnViewClickListener {
-            when(renameItem.endIconResId.value) {
-                R.drawable.ic_star_yellow -> {
-                    renameItem.setEndIconResId(R.drawable.ic_star_grey)
-                }
-                R.drawable.ic_star_grey -> {
-                    renameItem.setEndIconResId(R.drawable.ic_star_yellow)
-                }
-                else -> {
-                    renameItem.setEndIconResId(R.drawable.ic_star_yellow)
-                }
-            }
-        }
-        // 测试添加组的子项
-        addItem?.setOnViewClickListener {
-            val currentList = menuListGroups[0].group.value?.toMutableList()
-            currentList?.run {
-                this.add(ObservableMenuListItemData(MenuListItemData(R.drawable.ic_star_yellow, "黄色星星")))
-                menuListGroups[0].setGroup(this)
-            }
-        }
-        // 测试添加组别
-        val barItemsList1 =
-            mutableListOf(MenuListItemData(R.drawable.ic_star_grey, "灰色星星", null, null),)
-
-        sendItem?.setOnViewClickListener {
-            val currentList = observableMenuListGroupsData.groups.value?.toMutableList()
-            currentList?.run {
-                this.add(ObservableMenuListGroupData(MenuListGroupData(barItemsList1)))
-                observableMenuListGroupsData.setGroups(this)
-            }
-        }
-
-        menuListGroupsView.post {
-            menuListGroupsView.bind(observableMenuListGroupsData)
-        }
-    }*/
-
-
-    // 调试用途：生成menu list测试数据
-    private fun generateMenuListData(): MutableList<MenuListGroupData> {
-        // 添加到
-        val addToGroups = MenuListGroupsData(
-                mutableListOf(
-                    MenuListGroupData(
-                    mutableListOf(
-                        MenuListItemData(R.drawable.ic_start, "星标"),
-                        MenuListItemData(R.drawable.ic_label, "标签"),
-                        MenuListItemData(R.drawable.ic_add_shortcut, "添加快捷方式到"),
-                        MenuListItemData(R.drawable.ic_add_quickaccess, "添加到快速访问"),
-                        MenuListItemData(R.drawable.ic_add_home, "添加到主屏幕"),
-                    )
-                )
-            )
-        )
-
-        val moreExportChangeGroups = MenuListGroupsData(
-                mutableListOf(
-                    MenuListGroupData(
-                    mutableListOf(
-                        MenuListItemData(R.drawable.ic_export_text, "导出高亮文本"),
-                        MenuListItemData(R.drawable.ic_extract_images, "批量提取图片"),
-                        MenuListItemData(R.drawable.ic_save_template, "保存为自定义模板", subText = "减少重复性工作"),
-                        MenuListItemData(R.drawable.ic_extract_page, "提取页面"),
-                        MenuListItemData(R.drawable.ic_merge_docs, "合并文档"),
-                        // 这里改动了一下，测试了一下两级页面
-                        MenuListItemData(R.drawable.ic_doc_optimize, "文档瘦身", endIconResId = R.drawable.ic_go_forward, nextGroups = addToGroups),
-                    )
-                )
-            )
-        )
-
-        val aiConvertChangeGroups = MenuListGroupsData(
-                mutableListOf(
-                    MenuListGroupData(
-                    mutableListOf(
-                        MenuListItemData(R.drawable.ic_ai_ppt, "AI生成PPT"),
-                        MenuListItemData(R.drawable.ic_ai_mindmap, "AI文档脑图"),
-                    )
-                )
-            )
-        )
-
-        val encryptionGroups = MenuListGroupsData(
-                mutableListOf(
-                    MenuListGroupData(
-                    mutableListOf(
-                        MenuListItemData(R.drawable.ic_doc_lock, "文档加密"),
-                        MenuListItemData(R.drawable.ic_doc_verify, "文档认证"),
-                    )
-                )
-            )
-        )
-
-        val backupGroups = MenuListGroupsData(
-                mutableListOf(
-                    MenuListGroupData(
-                    mutableListOf(
-                        MenuListItemData(R.drawable.ic_doc_repair, "文档修复"),
-                        MenuListItemData(R.drawable.ic_history, "历史版本"),
-                    )
-                )
-            )
-        )
-
-        // 各个组内项
-        val barItemsList1 = mutableListOf(
-            MenuListItemData(R.drawable.ic_rename, "重命名", null, null),
-            MenuListItemData(R.drawable.ic_move_copy, "移动或复制", null, null),
-            MenuListItemData(R.drawable.ic_send_to, "发送到", "电脑、手机等其他设备", null),
-            MenuListItemData(R.drawable.ic_add_to, "添加到", null, R.drawable.ic_go_forward, nextGroups = addToGroups),
-        )
-        val barItemList2 = mutableListOf(
-            MenuListItemData(R.drawable.ic_export_pdf, "输出为pdf", null, null),
-            MenuListItemData(R.drawable.ic_export_image, "输出为图片", null, null),
-            MenuListItemData(R.drawable.ic_more_export, "更多输出转换", "合并、瘦身", R.drawable.ic_go_forward, nextGroups = moreExportChangeGroups),
-            MenuListItemData(R.drawable.ic_ai_convert, "AI生成转换", "PPT、截图", R.drawable.ic_go_forward, nextGroups = aiConvertChangeGroups),
-        )
-        val barItemList3 = mutableListOf(
-            MenuListItemData(R.drawable.ic_tts, "语音朗读", null, null),
-            MenuListItemData(R.drawable.ic_all_services, "全部服务", null, R.drawable.ic_go_forward),
-        )
-        val barItemList4 = mutableListOf(
-            MenuListItemData(R.drawable.ic_backup_restore, "备份与恢复", null, R.drawable.ic_go_forward, nextGroups = backupGroups),
-            MenuListItemData(R.drawable.ic_lock_auth, "加密与认证", null, R.drawable.ic_go_forward, nextGroups = encryptionGroups),
-            MenuListItemData(R.drawable.ic_open_location, "打开文件位置", null, null),
-            MenuListItemData(R.drawable.ic_doc_info, "文档信息", null, null),
-        )
-        val barItemList5 = mutableListOf(
-            MenuListItemData(R.drawable.ic_help_feedback, "帮助与反馈", null, null),
-        )
-
-        // 总体的组
-        val groups = mutableListOf(
-            MenuListGroupData(barItemsList1),
-            MenuListGroupData(barItemList2),
-            MenuListGroupData(barItemList3),
-            MenuListGroupData(barItemList4),
-            MenuListGroupData(barItemList5),
-        )
-
-        return groups
-    }
-    // 调试用途：生成tool bar测试数据
-    private fun generateToolBarData(): MutableList<ToolItemData> {
-        val dataList = mutableListOf(
-            ToolItemData(R.drawable.ic_save_as, "另存"),
-            ToolItemData(R.drawable.ic_share, "分享"),
-            ToolItemData(R.drawable.ic_print, "打印"),
-            ToolItemData(R.drawable.ic_paper_tools, "论文工具"),
-            ToolItemData(R.drawable.ic_find, "查找"),
-            ToolItemData(null, "乐子1"),
-            ToolItemData(null, "乐子2"),
-            ToolItemData(null, "乐子3"),
-        )
-        return dataList
-    }
-
-    private fun generateTitleData(): TitleData {
-        return TitleData(
-            R.drawable.ic_title,
-            "新笔记",
-            "字数：0",
-            R.drawable.ic_star_grey,
-            null
-        ) { hideBottomSheet() }
-    }
-
-    // 调试用途
-    /*private fun initTitleView() {
-        titleView = findViewById(R.id.test_title)
-
-        val titleData = TitleData(
-            R.drawable.ic_title,
-            "新笔记",
-            "字数：0",
-            R.drawable.ic_star_grey,
-            null
-        )
-        val observableTitleData = ObservableTitleData(titleData)
-
-        // 仅仅作为一个运行时切换的小例子：通过纯粹的操纵数据来改变视图
-        observableTitleData.setOnEndIconClickedListener {
-            when (observableTitleData.endIconResId.value) {
-                R.drawable.ic_star_grey -> {
-                    observableTitleData.setEndIconResId(R.drawable.ic_star_yellow)
-                }
-                R.drawable.ic_star_yellow -> {
-                    observableTitleData.setEndIconResId(R.drawable.ic_star_grey)
-                }
-            }
-        }
-        // 延迟绑定，确保视图已经附加到窗口
-        titleView.post {
-            titleView.bind(observableTitleData)
-        }
-    }*/
-
-    // 其实这里的透明度计算，和各种隐藏显示底部抽屉的逻辑是最想塞到viewModel的地方，但是目前不知道怎么塞
-    private fun initView() {
-        val bottomSheet: View = findViewById(R.id.bottomSheet)
-        bottomSheetTopArea = findViewById(R.id.bottom_sheet_top_area)
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.isFitToContents = false
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        
-        // 设置滑动处理，让RecyclerView能够正常滑动
-        bottomSheetBehavior.isDraggable = true
-
-        bottomSheet.post {
-            val parentHeight = (bottomSheet.parent as View).height
-            bottomSheetBehavior.expandedOffset = (parentHeight * EXPANDED_OFFSET_RATIO).toInt()
-        }
-
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        bottomSheetTopArea.visibility = View.GONE
-                    }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        bottomSheetTopArea.visibility = View.VISIBLE
-                    }
-                }
-            }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // 改变透明度：使用平方根函数创建平滑的透明度过渡效果(怎么会想到用平方根呢？)
-                val alpha = sqrt((slideOffset + 1) / ALPHA_CALCULATION_DIVISOR)
-                bottomSheetTopArea.alpha = alpha
-            }
-
-        })
-
-        findViewById<Button>(R.id.show).setOnClickListener {
-            if (bottomSheetTopArea.isGone) {
-                showBottomSheet()
-            } else if (bottomSheetTopArea.isVisible) {
-                hideBottomSheet()
-            }
-        }
-
-        bottomSheetTopArea.setOnClickListener {
-            hideBottomSheet()
-        }
-    }
-
-    private fun showBottomSheet() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        bottomSheetTopArea.visibility = View.VISIBLE
-    }
-    private fun hideBottomSheet() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        bottomSheetTopArea.visibility = View.GONE
     }
 }

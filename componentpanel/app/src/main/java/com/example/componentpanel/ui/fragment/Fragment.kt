@@ -48,7 +48,7 @@ class Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindData()
         // 这里的返回事件并不是可配置的，干脆直接写死了
-        // 主要是发现这个返回事件好像只能够放置在fragment中，在activity中写不了，因为是针对fragment的退栈操作
+        // 主要是发现这个返回listener事件好像只能够放置在fragment中，在activity中写不了，因为是针对fragment的退栈操作
         if (menuViewModel.canGoBack()) {
             titleView.setImageClickListener(TitleView.START_ICON) {
                 when(menuViewModel.canGoBack()) {

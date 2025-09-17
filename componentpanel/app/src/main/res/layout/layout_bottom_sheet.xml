@@ -9,39 +9,6 @@
     android:background="@android:color/white"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <!--<com.example.componentpanel.ui.view.baseview.TitleView
-        android:id="@+id/test_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/bottom_sheet_scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="tool bar和menu list被包在这里面">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            &lt;!&ndash;这里是按照scrollView + linearLayout设计的&ndash;&gt;
-            <com.example.componentpanel.ui.view.compositview.ToolGroupView
-                android:id="@+id/test_tool"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <com.example.componentpanel.ui.view.compositview.MenuListGroupsView
-                android:id="@+id/test_menu"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>-->
-    <!--Fragment容器，用于动态替换BottomSheet内容（包含TitleBar和内容）-->
-    <!--<FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />-->
-
     <!-- NavHostFragment 容器，用于 BottomSheet 内的 Fragment 导航 -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
@@ -52,13 +19,3 @@
         app:defaultNavHost="false" />
 
 </LinearLayout>
-
-
-    <!--下面是按照recyclerView设计的-->
-    <!--<include
-        android:id="@+id/recyclerView_grid"
-        layout="@layout/rv_tool_bar" />
-
-    <include
-        android:id="@+id/recyclerView_barGroups"
-        layout="@layout/rv_menu_list" />-->

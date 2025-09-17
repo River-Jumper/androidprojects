@@ -1,16 +1,16 @@
 package com.example.componentpanel.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 abstract class NavigatorViewModel<T> : ViewModel() {
-    protected val stack = ArrayDeque<T>()
+    private val stack = ArrayDeque<T>()
+    var root: T? = null
     var curItem: T? = null
 
-    open fun setRoot(root: T) {
+    protected fun setStackRoot(root: T) {
         stack.clear()
         stack.addLast(root)
+        this.root = root
         curItem = root
     }
 

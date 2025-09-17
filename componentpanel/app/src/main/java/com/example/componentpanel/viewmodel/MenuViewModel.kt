@@ -4,7 +4,7 @@ import com.example.componentpanel.model.basemodel.MenuListGroupsData
 import com.example.componentpanel.model.observablemodel.ObservableMenuListGroupsData
 
 class MenuViewModel : NavigatorViewModel<ObservableMenuListGroupsData>() {
-    fun setRoot(root: MenuListGroupsData) {
-        super.setRoot(ObservableMenuListGroupsData(root))
+    fun initRoot(root: MenuListGroupsData) {
+        super.setStackRoot(ObservableMenuListGroupsData(root))
     }
 }

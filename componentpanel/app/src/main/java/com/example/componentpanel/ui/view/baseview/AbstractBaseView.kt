@@ -40,14 +40,18 @@ abstract class AbstractBaseView @JvmOverloads constructor(
     // 后面发现其实对文字和图标添加监听其实没什么用，因为好像都是点击整个视图
     private fun setupClickListeners() {
         imageViews.forEach { (key, imageView) ->
-            imageView.setOnClickListener {
-                imageClickListeners[key]?.invoke()
+            if (imageView.isClickable) {
+                imageView.setOnClickListener {
+                    imageClickListeners[key]?.invoke()
+                }
             }
         }
         
         textViews.forEach { (key, textView) ->
-            textView.setOnClickListener {
-                textClickListeners[key]?.invoke()
+            if (textView.isClickable) {
+                textView.setOnClickListener {
+                    textClickListeners[key]?.invoke()
+                }
             }
         }
 
