@@ -10,6 +10,7 @@ class ObservableTitleData(data: TitleData) {
     private val _subTitle = MutableLiveData<String?>(data.subTitle)
     private val _endIconResId = MutableLiveData<Int?>(data.endIconResId)
     private val _midTitle = MutableLiveData<String?>(data.midTitle)
+    private val _onStartIconClickedListener = MutableLiveData<(() -> Unit)?>(data.onStartIconClickedListener)
     private val _onEndIconClickedListener = MutableLiveData<(() -> Unit)?>(data.onEndIconClickedListener)
 
     val startIconResId: LiveData<Int?> = _startIconResId
@@ -17,6 +18,7 @@ class ObservableTitleData(data: TitleData) {
     val subTitle: LiveData<String?> = _subTitle
     val endIconResId: LiveData<Int?> = _endIconResId
     val midTitle: LiveData<String?> = _midTitle
+    val onStartIconClickedListener: LiveData<(() -> Unit)?> = _onStartIconClickedListener
     val onEndIconClickedListener: LiveData<(() -> Unit)?> = _onEndIconClickedListener
 
     fun setStartIconResId(resId: Int?) {
@@ -34,6 +36,9 @@ class ObservableTitleData(data: TitleData) {
     fun setMidTitle(midTitle: String?) {
         _midTitle.value = midTitle
     }
+    fun setOnStartIconClickedListener(listener: (() -> Unit)?) {
+        _onStartIconClickedListener.value = listener
+    }
     fun setOnEndIconClickedListener(listener: (() -> Unit)?) {
         _onEndIconClickedListener.value = listener
     }
@@ -42,6 +47,8 @@ class ObservableTitleData(data: TitleData) {
         setMainTitle(data.mainTitle)
         setSubTitle(data.subTitle)
         setEndIconResId(data.endIconResId)
+        setMidTitle(data.midTitle)
+        setOnStartIconClickedListener(data.onStartIconClickedListener)
         setOnEndIconClickedListener(data.onEndIconClickedListener)
     }
 }

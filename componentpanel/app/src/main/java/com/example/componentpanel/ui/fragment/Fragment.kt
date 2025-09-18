@@ -41,38 +41,29 @@ class Fragment : Fragment() {
         menuListGroupsView = view.findViewById(R.id.item_menu_list)
         titleView = view.findViewById(R.id.view_bottomSheet_title)
         toolGroupView = view.findViewById(R.id.item_tool_bar)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            goBack()
+        }
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindData()
-        // 这里的返回事件并不是可配置的，干脆直接写死了
-        // 主要是发现这个返回listener事件好像只能够放置在fragment中，在activity中写不了，因为是针对fragment的退栈操作
         if (menuViewModel.canGoBack()) {
-            titleView.setImageClickListener(TitleView.START_ICON) {
-                when(menuViewModel.canGoBack()) {
-                    true -> {
-                        stackGoBack()
-                        findNavController().popBackStack()
-                    }
-                    false -> requireActivity().finish()
-                }
+            titleViewModel.curItem?.setOnStartIconClickedListener {
+                goBack()
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        bindData()
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            when(menuViewModel.canGoBack()) {
-                true -> {
-                    stackGoBack()
-                    findNavController().popBackStack()
-                }
-                false -> requireActivity().finish()
+    private fun goBack() {
+        when(menuViewModel.canGoBack()) {
+            true -> {
+                stackGoBack()
+                findNavController().popBackStack()
             }
+            false -> requireActivity().finish()
         }
     }
 
@@ -80,11 +71,11 @@ class Fragment : Fragment() {
         menuViewModel.curItem?.let { groups ->
             menuListGroupsView.bind(groups)
         }
-        toolViewModel.curItem?.let { groups ->
-            toolGroupView.bind(groups)
+        toolViewModel.curItem?.let { group ->
+            toolGroupView.bind(group)
         }
-        titleViewModel.curItem?.let { groups ->
-            titleView.bind(groups)
+        titleViewModel.curItem?.let { title ->
+            titleView.bind(title)
         }
     }
     private fun stackGoBack() {

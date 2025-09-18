@@ -128,7 +128,6 @@ object TestDataGenerator {
             "新笔记",
             "字数：0",
             R.drawable.ic_close,
-            null,
         )
     }
 

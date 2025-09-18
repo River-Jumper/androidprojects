@@ -89,6 +89,9 @@ class TitleView @JvmOverloads constructor(
                 setText(MID_TITLE, text)
             }
         }
+        data.onStartIconClickedListener.observe(owner) { listener ->
+            setImageClickListener(START_ICON, listener)
+        }
         data.onEndIconClickedListener.observe(owner) { listener ->
             setImageClickListener(END_ICON, listener)
         }
@@ -99,6 +102,8 @@ class TitleView @JvmOverloads constructor(
             boundData?.startIconResId?.removeObservers(lifecycleOwner!!)
             boundData?.mainTitle?.removeObservers(lifecycleOwner!!)
             boundData?.subTitle?.removeObservers(lifecycleOwner!!)
+            boundData?.midTitle?.removeObservers(lifecycleOwner!!)
+            boundData?.startIconResId?.removeObservers(lifecycleOwner!!)
             boundData?.endIconResId?.removeObservers(lifecycleOwner!!)
             boundData?.onEndIconClickedListener?.removeObservers(lifecycleOwner!!)
         }
